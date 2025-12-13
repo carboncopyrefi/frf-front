@@ -62,6 +62,8 @@ export default function Evaluate() {
 
   const allDone = Object.keys(assessments).length === total;
 
+  const fmtScore = (v: number | null) => (v === null ? 'N/A' : `${(v * 100).toFixed(1)}%`);
+
 const handleSubmit = async () => {
   setSubmitting(true);
   const codeMap = { agree: '1', disagree: '2', neither: '3' } as const;
@@ -273,7 +275,6 @@ const handleSubmit = async () => {
 
               {/* Body */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                <p className="mb-8">The following data is taken directly from Karma.</p>
                 {/* Accordion */}
                 <div className="">
                   {/* Links */}
@@ -336,7 +337,7 @@ const handleSubmit = async () => {
                     {({ open }) => (
                       <>
                         <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 mt-2">
-                          <span>Updates</span>
+                          <span>Karma Updates</span>
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
                         <Transition show={open} enter="transition duration-100 ease-out" enterFrom="transform scale-95 opacity-0" enterTo="transform scale-100 opacity-100" leave="transition duration-75 ease-out" leaveFrom="transform scale-100 opacity-100" leaveTo="transform scale-95 opacity-0">
@@ -350,7 +351,33 @@ const handleSubmit = async () => {
                                 </div>
                               ))
                             ) : (
-                              <p>No updates</p>
+                              <p>No Karma updates</p>
+                            )}
+                          </DisclosurePanel>
+                        </Transition>
+                      </>
+                    )}
+                  </Disclosure>
+
+                  {/* Past Submissions */}
+                  <Disclosure>
+                    {({ open }) => (
+                      <>
+                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 mt-2">
+                          <span>Past Submissions</span>
+                          <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
+                        </DisclosureButton>
+                        <Transition show={open} enter="transition duration-100 ease-out" enterFrom="transform scale-95 opacity-0" enterTo="transform scale-100 opacity-100" leave="transition duration-75 ease-out" leaveFrom="transform scale-100 opacity-100" leaveTo="transform scale-95 opacity-0">
+                          <DisclosurePanel className="px-4 pt-2 pb-2 text-sm text-gray-700 dark:text-gray-300 space-y-3">
+                            {submission.past_submissions.length ? (
+                              submission.past_submissions.map((u: any) => (
+                                <div key={u.date}>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(u.date_completed).toLocaleDateString()}</p>
+                                  <p className="mt-1">{fmtScore(u.score)}</p>
+                                </div>
+                              ))
+                            ) : (
+                              <p>No past submissions</p>
                             )}
                           </DisclosurePanel>
                         </Transition>

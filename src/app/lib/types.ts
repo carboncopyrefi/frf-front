@@ -18,6 +18,7 @@ export type Submission = {
   };
   answers?: { question_id: string; answer: string }[];
   karma_data?: any;
+  past_submissions?: any;
 };
 
 // Full payload from GET /categories/{slug}

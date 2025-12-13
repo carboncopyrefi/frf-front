@@ -158,6 +158,31 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 lg:py-6">
         <Outlet />
       </main>
+
+      <footer className="sticky top-full mt-auto bg-white/70 dark:bg-gray-950/70 backdrop-blur border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 sm:gap-0 text-sm text-center sm:text-left">
+          {/* Copyright */}
+          <span className="text-gray-600 dark:text-gray-400">
+            © {new Date().getFullYear()} CARBON Copy
+          </span>
+
+          {/* Links */}
+          <div className="flex flex-wrap justify-center sm:justify-end gap-3 sm:gap-4">
+            <Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+              About FRF
+            </Link>
+            <Link to="https://carboncopy.news" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+              CARBON Copy
+            </Link>
+            <Link to="https://karma.xyz" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+              Karma
+            </Link>
+            <Link to="https://attest.org" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+              Ethereum Attestation Service
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

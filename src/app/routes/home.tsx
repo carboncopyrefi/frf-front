@@ -116,78 +116,102 @@ export default function Home() {
               Sort: <span className="font-semibold">{sort.replace('_', ' ')}</span>
             </button> */}
           </div>
+          
+          {sorted.length ? (
+            <>
+              {sorted.map((s) => (
+                <div key={s.id ?? `${s.project_id}-${s.date_completed}`} className="md:hidden">
+                  <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">{s.project_name}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(s.date_completed).toLocaleDateString()}</span>
+                    </div>
 
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100/50 dark:bg-gray-800/50">
-              <tr>
-                <th className="px-4 py-3 text-left font-semibold">Project</th>
-                <th className="px-4 py-3 text-left font-semibold">Date Submitted</th>
-                <th className="px-4 py-3 text-left font-semibold">Last Evaluation Date</th>
-                <th className="px-4 py-3 text-left font-semibold">Evaluations</th>
-                <th className="px-4 py-3 text-left font-semibold">Funding Readiness</th>
-                <th className="px-4 py-3 text-left font-semibold"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-              {sorted.length ? (
-                sorted.map((s) => (
-                  <tr
-                    key={s.id ?? `${s.project_id}-${s.date_completed}`}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                  >
-                    <td className="px-4 py-3 font-mono text-gray-700 dark:text-gray-300">{s.project_name}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
-                      {new Date(s.date_completed).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
-                      { s.last_evaluation_date
-                        ? new Date(s.last_evaluation_date).toLocaleDateString()
-                        : 'N/A' }
-                    </td>
-                    <td className="px-4 py-3 font-mono text-gray-700 dark:text-gray-300">{s.evaluation_count}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`
-                          inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                          ${
-                            (s.score ?? 0) >= 0.8
-                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                              : (s.score ?? 0) >= 0.5
-                              ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
-                              : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-                          }
-                        `}
-                      >
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div><p className="text-gray-500 dark:text-gray-400">Last Eval</p><p>{s.last_evaluation_date ? new Date(s.last_evaluation_date).toLocaleDateString() : 'N/A'}</p></div>
+                      <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{s.evaluation_count}</p></div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${(s.score ?? 0) >= 0.8 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : (s.score ?? 0) >= 0.5 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
                         {formatScore(s.score)}
                       </span>
-                    </td>
-                    <td className='text-right px-4 py-3'>
-                      <div className="inline-flex items-center gap-2">
-                        <Link
-                          to={`/evaluate/${s.id}`}
-                          className="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition"
-                        >
-                          Evaluate
-                        </Link>
-                        <Link
-                          to={`/submissions/${s.id}`}
-                          className="px-3 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
-                        >
-                          View
-                        </Link>
+                      <div className="flex items-center gap-2">
+                        <Link to={`/evaluate/${s.id}`} className="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium">Evaluate</Link>
+                        <Link to={`/submissions/${s.id}`} className="px-3 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium">View</Link>
                       </div>
-                    </td>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <table className="hidden md:table w-full text-sm">
+                <thead className="bg-gray-100/50 dark:bg-gray-800/50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold">Project</th>
+                    <th className="px-4 py-3 text-left font-semibold">Date Submitted</th>
+                    <th className="px-4 py-3 text-left font-semibold">Last Evaluation Date</th>
+                    <th className="px-4 py-3 text-left font-semibold">Evaluations</th>
+                    <th className="px-4 py-3 text-left font-semibold">Funding Readiness</th>
+                    <th className="px-4 py-3 text-left font-semibold"></th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    No submissions
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-800">     
+                    {sorted.map((s) => (
+                      <tr
+                        key={s.id ?? `${s.project_id}-${s.date_completed}`}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-mono text-gray-700 dark:text-gray-300">{s.project_name}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                          {new Date(s.date_completed).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                          { s.last_evaluation_date
+                            ? new Date(s.last_evaluation_date).toLocaleDateString()
+                            : 'N/A' }
+                        </td>
+                        <td className="px-4 py-3 font-mono text-gray-700 dark:text-gray-300">{s.evaluation_count}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`
+                              inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                              ${
+                                (s.score ?? 0) >= 0.8
+                                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                  : (s.score ?? 0) >= 0.5
+                                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                                  : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                              }
+                            `}
+                          >
+                            {formatScore(s.score)}
+                          </span>
+                        </td>
+                        <td className='text-right px-4 py-3'>
+                          <div className="inline-flex items-center gap-2">
+                            <Link
+                              to={`/evaluate/${s.id}`}
+                              className="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition"
+                            >
+                              Evaluate
+                            </Link>
+                            <Link
+                              to={`/submissions/${s.id}`}
+                              className="px-3 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
+                            >
+                              View
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>  
+            </>
+          ) : (
+            <div className="md:block hidden">No submissions</div>
+          )}
+          
         </div>
       </section>
     </>
