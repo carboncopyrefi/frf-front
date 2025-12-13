@@ -8,6 +8,7 @@ import { Info, CircleChevronRight } from 'lucide-react'
 import { Autocomplete } from '~/components/Autocomplete';
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
+import { ErrorBanner } from "~/components/ErrorBanner";
 
 export async function loader(): Promise<{ questions: (Question & { id: string })[] }> {
   return { questions: await api.get<(Question & { id: string })[]>('questions') };
@@ -20,6 +21,7 @@ export function meta({}: Route.MetaArgs) {
 export default function Submission() {
   const { questions } = useLoaderData<typeof loader>();
   const [projects, setProjects] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   /* ---------- derive ordered sections ---------- */
@@ -81,7 +83,7 @@ export default function Submission() {
             const res = await api.post<{ id: string }>('/submission', payload);
             navigate(`/submissions/${res.id}`);
         } catch (error) {
-            alert('Error submitting your answers. Please try again.');
+            setError('There was an error submitting your answers. Please try again.');
             setSubmitting(false);
         }
     };
@@ -201,6 +203,7 @@ export default function Submission() {
 
     {/* Navigation */}
     <div className="flex items-center justify-end gap-3 mt-6">
+        {error && <ErrorBanner msg={error} onDismiss={() => setError(null)} />}
         {step > 0 && (
             <button
                 onClick={() => setStep(step - 1)}

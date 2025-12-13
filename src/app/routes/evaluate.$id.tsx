@@ -10,6 +10,7 @@ import { Transition, TransitionChild, Disclosure, DisclosurePanel, DisclosureBut
 import { Icon } from "~/components/Icons"
 import Markdown from "react-markdown";
 import { Back } from "~/components/Back";
+import { ErrorBanner } from "~/components/ErrorBanner";
 
 /* ---------- loader ---------- */
 export async function loader({ params }: Route.LoaderArgs) {
@@ -32,6 +33,7 @@ export default function Evaluate() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,7 +82,7 @@ const handleSubmit = async () => {
     await api.post('/evaluation', payload);
     navigate('/success?from=evaluate');
   } catch (error) {
-            alert('Error submitting your evaluation. Please try again.');
+            setError('There was an error submitting your evaluation. Please try again.');
             setSubmitting(false);
         }
 };
@@ -173,45 +175,46 @@ const handleSubmit = async () => {
 
       {/* Nav */}
       <div className="flex items-center justify-end gap-3 mt-6">
-      {step !== 0 && (
-        <button
-          onClick={back}
-          className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-        >
-          ← Back
-        </button>
-      )}
-
-        {step === total - 1 ? (
+        {error && <ErrorBanner msg={error} onDismiss={() => setError(null)} />}
+        {step !== 0 && (
           <button
-            onClick={handleSubmit}
-            disabled={!allDone || submitting}
-            className={`px-4 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
-              allDone && !submitting
-                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-            }`}
+            onClick={back}
+            className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
           >
-            {submitting ? (
-              <>
-                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Sending…
-              </>
-            ) : (
-              'Submit Evaluation'
-            )}
-          </button>
-        ) : (
-          <button
-            onClick={next}
-            className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
-          >
-            Next →
+            ← Back
           </button>
         )}
+
+          {step === total - 1 ? (
+            <button
+              onClick={handleSubmit}
+              disabled={!allDone || submitting}
+              className={`px-4 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
+                allDone && !submitting
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              {submitting ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Sending…
+                </>
+              ) : (
+                'Submit Evaluation'
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={next}
+              className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+            >
+              Next →
+            </button>
+          )}
       </div>
 
       {/* Modal */}

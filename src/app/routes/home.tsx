@@ -209,7 +209,7 @@ export default function Home() {
               </table>  
             </>
           ) : (
-            <div className="md:block hidden">No submissions</div>
+            <div className="py-5 px-5 text-center text-sm">No submissions</div>
           )}
           
         </div>
