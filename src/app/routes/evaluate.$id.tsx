@@ -4,7 +4,7 @@ import type { Route } from './+types/evaluate.$id';
 import { api } from '~/lib/api';
 import type { Submission, Question } from '~/lib/types';
 import { StatementModal } from '~/components/StatementModal';
-import { Info, ChevronUpIcon, CircleChevronRight } from 'lucide-react';
+import { Info, ChevronUpIcon, CircleChevronRight, ArrowRight, ArrowLeft } from 'lucide-react';
 import { H1 } from "~/components/H1";
 import { Transition, TransitionChild, Disclosure, DisclosurePanel, DisclosureButton } from '@headlessui/react';
 import { Icon } from "~/components/Icons"
@@ -179,9 +179,9 @@ const handleSubmit = async () => {
         {step !== 0 && (
           <button
             onClick={back}
-            className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
           >
-            ← Back
+            <ArrowLeft height={16} width={16} className='me-2' /> Back
           </button>
         )}
 
@@ -210,9 +210,9 @@ const handleSubmit = async () => {
           ) : (
             <button
               onClick={next}
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
             >
-              Next →
+              Next <ArrowRight height={16} width={16} className='ms-2' />
             </button>
           )}
       </div>
@@ -320,13 +320,13 @@ const handleSubmit = async () => {
                   <Disclosure>
                     {({ open }) => (
                       <>
-                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 mt-2">
+                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 mt-2">
                           <span>Description</span>
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
                         <Transition show={open} enter="transition duration-100 ease-out" enterFrom="transform scale-95 opacity-0" enterTo="transform scale-100 opacity-100" leave="transition duration-75 ease-out" leaveFrom="transform scale-100 opacity-100" leaveTo="transform scale-95 opacity-0">
-                          <DisclosurePanel className="px-4 pt-2 pb-2 text-sm text-gray-700 dark:text-gray-300">
-                            <div className="prose dark:prose-invert max-w-none">
+                          <DisclosurePanel className="px-4 pt-2 pb-2 text-gray-700 dark:text-gray-300">
+                            <div className="prose dark:prose-invert max-w-none text-sm">
                               <Markdown>{submission.karma_data?.project_details?.description || 'No description'}</Markdown>
                             </div>
                           </DisclosurePanel>
@@ -344,13 +344,14 @@ const handleSubmit = async () => {
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
                         <Transition show={open} enter="transition duration-100 ease-out" enterFrom="transform scale-95 opacity-0" enterTo="transform scale-100 opacity-100" leave="transition duration-75 ease-out" leaveFrom="transform scale-100 opacity-100" leaveTo="transform scale-95 opacity-0">
-                          <DisclosurePanel className="px-4 pt-2 pb-2 text-sm text-gray-700 dark:text-gray-300 space-y-3">
+                          <DisclosurePanel className="px-4 pt-2 pb-2 text-gray-700 dark:text-gray-300 space-y-3">
                             {submission.karma_data?.updates?.length ? (
                               submission.karma_data.updates.map((u: any) => (
-                                <div key={u.date}>
-                                  <p className="font-medium">{u.title}</p>
+                                <div key={u.date} className='border-b pb-3 border-gray-200 dark:border-gray-600'>
+                                  <h3 className="text-md font-bold">{u.title}</h3>
                                   <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(u.date).toLocaleDateString()}</p>
-                                  <p className="mt-1">{u.description}</p>
+                                  <p className="mt-1 prose dark:prose-invert text-sm"><Markdown>{u.description}</Markdown></p>
+                                  <p>{ u.verified }</p>
                                 </div>
                               ))
                             ) : (
@@ -371,12 +372,12 @@ const handleSubmit = async () => {
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
                         <Transition show={open} enter="transition duration-100 ease-out" enterFrom="transform scale-95 opacity-0" enterTo="transform scale-100 opacity-100" leave="transition duration-75 ease-out" leaveFrom="transform scale-100 opacity-100" leaveTo="transform scale-95 opacity-0">
-                          <DisclosurePanel className="px-4 pt-2 pb-2 text-sm text-gray-700 dark:text-gray-300 space-y-3">
+                          <DisclosurePanel className="px-4 pt-2 pb-2 text-gray-700 dark:text-gray-300 space-y-3">
                             {submission.past_submissions.length ? (
                               submission.past_submissions.map((u: any) => (
-                                <div key={u.date}>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(u.date_completed).toLocaleDateString()}</p>
-                                  <p className="mt-1">{fmtScore(u.score)}</p>
+                                <div key={u.date} className='border-b pb-3 border-gray-200 dark:border-gray-600'>
+                                  <p className="text-md"><strong>Date Completed:</strong> {new Date(u.date_completed).toLocaleDateString()}</p>
+                                  <p className="mt-1"><strong>Score:</strong> {fmtScore(u.score)}</p>
                                 </div>
                               ))
                             ) : (

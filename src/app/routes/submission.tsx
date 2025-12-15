@@ -4,7 +4,7 @@ import type { Route } from './+types/submission';
 import { api } from '~/lib/api';
 import type { Question } from '~/lib/types';
 import { StatementModal } from '~/components/StatementModal';
-import { Info, CircleChevronRight } from 'lucide-react'
+import { Info, CircleChevronRight, ArrowLeft, ArrowRight } from 'lucide-react'
 import { Autocomplete } from '~/components/Autocomplete';
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
@@ -207,9 +207,9 @@ export default function Submission() {
         {step > 0 && (
             <button
                 onClick={() => setStep(step - 1)}
-                className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                 >
-                ← Back
+                <ArrowLeft height={16} width={16} className='me-2' /> Back
             </button>
         )}
         {isLast ? (
@@ -237,9 +237,9 @@ export default function Submission() {
         ) : (
             <button
                 onClick={next}
-                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
                 >
-                Next →
+                Next <ArrowRight height={16} width={16} className='ms-2' />
             </button>
         )}
         </div>

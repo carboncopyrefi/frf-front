@@ -56,7 +56,7 @@ export default function Home() {
 
   /* --------------------- tiny helpers ------------------------------ */
   const formatScore = (v: number | null) =>
-    v === null || v === 0 ? '—' : `${(v * 100).toFixed(1)}%`;
+    v === null || v === 0 ? 'Awaiting Evaluation' : `${(v * 100).toFixed(1)}%`;
 
   const cycleSort = () => {
     const order: Array<'date_desc' | 'date_asc' | 'score_desc' | 'score_asc'> =
@@ -68,7 +68,7 @@ export default function Home() {
   return (
     <>
       {/* Stats cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <section className="hidden md:grid md:grid-cols-3 md:gap-4 md:mt-6">
         <article className="p-4 rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-400">Submissions</p>
           <p className="text-2xl font-semibold">{data.submissions.length}</p>
@@ -91,19 +91,19 @@ export default function Home() {
 
       {/* Table */}
       <section className="@container">
-        <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 overflow-hidden">
+        <div className="md:rounded-2xl md:bg-white md:dark:bg-gray-900 md:shadow-sm md:dark:shadow-none md:inset-shadow-sm md:dark:inset-shadow-gray-800 overflow-hidden mt-6">
           {/* toolbar: search + sort */}
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          <div className="md:px-4 py-5 md:border-b md:border-gray-200 md:dark:border-gray-800 flex items-center justify-between">
             <Form method="get" className="flex items-center gap-2">
               <input
                 name="q"
                 placeholder="Search by project"
                 defaultValue={search}
-                className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50 transition"
+                className="px-5 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50 transition"
               />
               <button
                 type="submit"
-                className="px-3 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
+                className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition cursor-pointer"
               >
                 Search
               </button>
@@ -120,35 +120,35 @@ export default function Home() {
           {sorted.length ? (
             <>
               {sorted.map((s) => (
-                <div key={s.id ?? `${s.project_id}-${s.date_completed}`} className="md:hidden">
-                  <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-3">
+                <div key={s.id ?? `${s.project_id}-${s.date_completed}`} className="lg:hidden mb-4">
+                  <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-6">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-gray-800 dark:text-gray-200">{s.project_name}</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(s.date_completed).toLocaleDateString()}</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div><p className="text-gray-500 dark:text-gray-400">Last Eval</p><p>{s.last_evaluation_date ? new Date(s.last_evaluation_date).toLocaleDateString() : 'N/A'}</p></div>
+                    <div className="grid grid-cols-3 gap-2 text-sm">
                       <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{s.evaluation_count}</p></div>
+                      <div><p className="text-gray-500 dark:text-gray-400">Last Evaluation</p><p>{s.last_evaluation_date ? new Date(s.last_evaluation_date).toLocaleDateString() : 'N/A'}</p></div>
+                      <div><p className="text-gray-500 dark:text-gray-400">Score</p><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${(s.score ?? 0) >= 0.8 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : (s.score ?? 0) >= 0.5 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
+                        {formatScore(s.score)}
+                      </span></div>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${(s.score ?? 0) >= 0.8 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : (s.score ?? 0) >= 0.5 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
-                        {formatScore(s.score)}
-                      </span>
+                    <div className="flex items-center justify-end">
                       <div className="flex items-center gap-2">
-                        <Link to={`/evaluate/${s.id}`} className="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium">Evaluate</Link>
-                        <Link to={`/submissions/${s.id}`} className="px-3 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium">View</Link>
+                        <Link to={`/evaluate/${s.id}`} className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">Evaluate</Link>
+                        <Link to={`/submissions/${s.id}`} className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium">View</Link>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
-              <table className="hidden md:table w-full text-sm">
+              <table className="hidden lg:table w-full text-sm">
                 <thead className="bg-gray-100/50 dark:bg-gray-800/50">
                   <tr>
                     <th className="px-4 py-3 text-left font-semibold">Project</th>
-                    <th className="px-4 py-3 text-left font-semibold">Date Submitted</th>
+                    <th className="px-4 py-3 text-left font-semibold">Date Completed</th>
                     <th className="px-4 py-3 text-left font-semibold">Last Evaluation Date</th>
                     <th className="px-4 py-3 text-left font-semibold">Evaluations</th>
                     <th className="px-4 py-3 text-left font-semibold">Funding Readiness</th>
@@ -187,17 +187,17 @@ export default function Home() {
                             {formatScore(s.score)}
                           </span>
                         </td>
-                        <td className='text-right px-4 py-3'>
+                        <td className='text-right pe-4 py-3'>
                           <div className="inline-flex items-center gap-2">
                             <Link
                               to={`/evaluate/${s.id}`}
-                              className="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition"
+                              className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition"
                             >
                               Evaluate
                             </Link>
                             <Link
                               to={`/submissions/${s.id}`}
-                              className="px-3 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
+                              className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
                             >
                               View
                             </Link>
