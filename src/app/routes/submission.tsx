@@ -90,7 +90,6 @@ export default function Submission() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-        {!projects.length && <div className="animate-pulse h-10 bg-gray-200 dark:bg-gray-700 rounded" />}
         <Back />
         <H1>Make Submission</H1>
         <div className='mb-10'>
@@ -138,15 +137,25 @@ export default function Submission() {
                     <div>
                         <label className="font-medium text-gray-800 dark:text-gray-200">Name</label>
                     </div>
-                        <Autocomplete
-                            value={answers[NAME_IX] || ''} // ← keeps it alive
-                            options={projects.map((p) => ({ value: p.id, label: p.name }))}
-                            placeholder="Start typing project name…"
-                            onChange={(opt) => {
-                                const karma = projects.find((p) => p.id === opt?.value)?.karma_slug || '';
-                                setAnswers({ ...answers, [NAME_IX]: opt?.label || '', [KARMA_IX]: karma });
-                            }}
-                        />
+                      <Autocomplete
+                          loading={!projects.length}
+                          value={answers[NAME_IX] || ''} // ← keeps it alive
+                          options={projects.map((p) => ({ value: p.id, label: p.name }))}
+                          placeholder="Start typing project name…"
+                          onChange={(opt) => {
+                              const karma = projects.find((p) => p.id === opt?.value)?.karma_slug || '';
+                              setAnswers({ ...answers, [NAME_IX]: opt?.label || '', [KARMA_IX]: karma });
+                          }}
+                      />
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => openModal('Missing Project', "Reach out at hello@carboncopy.news and we'll get you added to our database.")}
+                        className="text-indigo-600 dark:text-indigo-400 cursor-pointer text-sm"
+                      >
+                        Don't see your project in the list?
+                      </button>
+                    </div>
                 </div>
                 <div className='space-y-2'>
                   <div className="flex items-start justify-between">

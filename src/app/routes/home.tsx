@@ -1,4 +1,5 @@
 import { useLoaderData, Form, useSearchParams, Link } from 'react-router';
+import { useState } from 'react';
 import type { Route } from './+types/home';
 import { api } from '~/lib/api';
 import type { CategoryPayload } from '~/lib/types';
@@ -28,13 +29,20 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   const data = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [filter, setFilter] = useState<'all' | 'evaluated' | 'awaiting'>('all');
 
   /* ------------ derive state from URL (search + sort) ------------- */
   const search = searchParams.get('q') ?? '';
   const sort   = searchParams.get('sort') ?? 'score_desc';
 
   /* -------------------------- filtering ---------------------------- */
-  const filtered = data.submissions.filter((s) =>
+  const filtered = data.submissions.filter((s) => {
+    if (filter === 'evaluated') return s.evaluation_count > 0;
+    if (filter === 'awaiting') return s.evaluation_count === 0;
+    return true; // all
+  });
+
+  const searched =filtered.filter((s) =>
     s.project_name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -108,6 +116,21 @@ export default function Home() {
                 Search
               </button>
             </Form>
+            <div className="flex flex-wrap items-center gap-2">
+              {(['all', 'evaluated', 'awaiting'] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition ${
+                    filter === f
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {f === 'all' ? 'All' : f === 'evaluated' ? 'Evaluated' : 'Awaiting'}
+                </button>
+              ))}
+            </div>
 
             {/* <button
               onClick={cycleSort}
@@ -138,7 +161,7 @@ export default function Home() {
                     <div className="flex items-center justify-end">
                       <div className="flex items-center gap-2">
                         <Link to={`/evaluate/${s.id}`} className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">Evaluate</Link>
-                        <Link to={`/submissions/${s.id}`} className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium">View</Link>
+                        <Link to={`/projects/${s.project_name.toLowerCase().replace(" ", "-")}`} className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium">View</Link>
                       </div>
                     </div>
                   </div>
@@ -196,7 +219,7 @@ export default function Home() {
                               Evaluate
                             </Link>
                             <Link
-                              to={`/submissions/${s.id}`}
+                              to={`/projects/${s.project_name.toLowerCase().replace(" ", "-")}`}
                               className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
                             >
                               View
@@ -209,7 +232,7 @@ export default function Home() {
               </table>  
             </>
           ) : (
-            <div className="py-5 px-5 text-center text-sm">No submissions</div>
+            <div className="py-5 px-5 text-center text-sm">No submissions {filter !== 'all' && `for “${filter}”`}</div>
           )}
           
         </div>

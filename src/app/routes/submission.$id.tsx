@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate } from 'react-router';
+import { useLoaderData, useNavigate, Link } from 'react-router';
 import { useEffect, useState } from 'react';
 import type { Route } from './+types/submission.$id';
 import { api } from '~/lib/api';
@@ -7,6 +7,7 @@ import { StatementModal } from '~/components/StatementModal';
 import { ChevronUpIcon } from 'lucide-react';
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
+import { Share } from "~/components/Share";
 
 /* ---------- loader (only id) ---------- */
 export async function loader({ params }: Route.LoaderArgs) {
@@ -38,10 +39,14 @@ export default function SubmissionPage() {
   const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleDateString() : 'N/A');
   const fmtScore = (v: number | null) => (v === null ? 'N/A' : `${(v * 100).toFixed(1)}%`);
 
+  const rootUrl = import.meta.env.VITE_ROOT_URL;
+  const shareUrl= rootUrl + `/projects/${data.project_name.toLowerCase().replace(" ", "-")}`;
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <Back />
-      <H1>{data.project_name}</H1>
+      <H1 className='mb-0'>{data.project_name}</H1>
+      <Share shareUrl={shareUrl} />
       {/* Header */}
       <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-6 space-y-2 mb-6">
         <h1 className="text-2xl font-semibold"></h1>

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 
 export function Autocomplete({
+  loading,
   options,
-  value, // ← new
+  value,
   onChange,
   placeholder,
 }: {
-  value: string | null; // selected label (can be empty)
+  loading?: boolean;
+  value: string | null;
   options: { value: string; label: string }[];
   onChange: (opt: { value: string; label: string } | null) => void;
   placeholder?: string;
@@ -22,6 +24,10 @@ export function Autocomplete({
   const matches = options.filter((o) =>
     o.label.toLowerCase().includes(input.toLowerCase())
   );
+
+  console.log(loading);
+  if (loading)
+    return <div className="animate-pulse h-10 bg-gray-200 dark:bg-gray-700 rounded-lg" />;
 
   return (
     <div className="relative w-full">
