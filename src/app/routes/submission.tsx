@@ -103,12 +103,9 @@ export default function Submission() {
         </div>
 
       {/* Progress bar */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center mb-8 flex-wrap gap-x-4 gap-y-2">
         {sections.map((s, idx) => (
-          <div
-            className="flex-1 flex items-center"
-            onClick={() => setStep(idx)} // ← jump to section
-            >
+          <div key={s} className="flex items-center" onClick={() => setStep(idx)}>
             <button
                 className={`
                 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
@@ -119,11 +116,9 @@ export default function Submission() {
             >
                 {idx + 1}
             </button>
-            <span className="ml-2 text-sm hidden sm:inline cursor-pointer hover:underline">{s}</span>
-            {idx < sections.length - 1 && (
-                <div className="flex-1 h-0.5 bg-gray-200 dark:bg-gray-700 ml-2" />
-            )}
-            </div>
+            <span className="ml-2 text-sm hidden md:inline cursor-pointer hover:underline">{s}</span>
+            {idx < sections.length - 1 && <div className="w-8 h-0.5 bg-gray-200 dark:bg-gray-700 ml-2" />}
+          </div>
         ))}
       </div>
 

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import type { Route } from './+types/home';
 import { api } from '~/lib/api';
 import type { CategoryPayload } from '~/lib/types';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import { ChevronDownIcon } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
 /* React-Router 7 loader                                              */
@@ -33,7 +35,6 @@ export default function Home() {
 
   /* ------------ derive state from URL (search + sort) ------------- */
   const search = searchParams.get('q') ?? '';
-  const sort   = searchParams.get('sort') ?? 'score_desc';
 
   /* -------------------------- filtering ---------------------------- */
   const filtered = data.submissions.filter((s) => {
@@ -44,34 +45,12 @@ export default function Home() {
 
   const searched =filtered.filter((s) =>
     s.project_name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  /* --------------------------- sorting ----------------------------- */
-  const sorted = [...filtered].sort((a, b) => {
-    switch (sort) {
-      case 'date_desc':
-        return new Date(b.date_completed).getTime() - new Date(a.date_completed).getTime();
-      case 'date_asc':
-        return new Date(a.date_completed).getTime() - new Date(b.date_completed).getTime();
-      case 'score_desc':
-        return (b.score ?? 0) - (a.score ?? 0);
-      case 'score_asc':
-        return (a.score ?? 0) - (b.score ?? 0);
-      default:
-        return 0;
-    }
-  });
+  )
+  .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 
   /* --------------------- tiny helpers ------------------------------ */
   const formatScore = (v: number | null) =>
     v === null || v === 0 ? 'Awaiting Evaluation' : `${(v * 100).toFixed(1)}%`;
-
-  const cycleSort = () => {
-    const order: Array<'date_desc' | 'date_asc' | 'score_desc' | 'score_asc'> =
-      ['date_desc', 'date_asc', 'score_desc', 'score_asc'];
-    const next = order[(order.indexOf(sort as any) + 1) % order.length];
-    setSearchParams({ q: search, sort: next });
-  };
 
   return (
     <>
@@ -101,22 +80,44 @@ export default function Home() {
       <section className="@container">
         <div className="md:rounded-2xl md:bg-white md:dark:bg-gray-900 md:shadow-sm md:dark:shadow-none md:inset-shadow-sm md:dark:inset-shadow-gray-800 overflow-hidden mt-6">
           {/* toolbar: search + sort */}
-          <div className="md:px-4 py-5 md:border-b md:border-gray-200 md:dark:border-gray-800 flex items-center justify-between">
-            <Form method="get" className="flex items-center gap-2">
+          <div className="md:px-4 py-5 md:border-b md:border-gray-200 md:dark:border-gray-800 flex items-center justify-between gap-4">
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault(); // stop real submit
+                const q = new FormData(e.currentTarget).get('q') as string;
+                setSearchParams({ q });
+              }}
+              className="flex items-center gap-2"
+            >
               <input
                 name="q"
                 placeholder="Search by project"
                 defaultValue={search}
-                className="px-5 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50 transition"
+                className="w-50 sm:w-75 px-5 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50 transition"
               />
               <button
                 type="submit"
                 className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition cursor-pointer"
-              >
+                >
                 Search
               </button>
             </Form>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="md:hidden relative w-full">
+              <Listbox value={filter} onChange={setFilter}>
+                <ListboxButton className="w-full flex items-center justify-between px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium">
+                  {filter === 'all' ? 'All' : filter === 'evaluated' ? 'Evaluated' : 'Awaiting'}
+                  <ChevronDownIcon className="w-4 h-4 ml-2" />
+                </ListboxButton>
+                <ListboxOptions className="absolute z-20 mt-1 w-full rounded-lg bg-white dark:bg-gray-900 shadow-lg border border-gray-200 dark:border-gray-700">
+                  {(['all', 'evaluated', 'awaiting'] as const).map((f) => (
+                    <ListboxOption key={f} value={f} className={({ active }) => `px-4 py-2 text-sm cursor-pointer ${active ? 'bg-indigo-50 dark:bg-indigo-900/30' : ''}`}>
+                      {f === 'all' ? 'All' : f === 'evaluated' ? 'Evaluated' : 'Need Evaluation'}
+                    </ListboxOption>
+                  ))}
+                </ListboxOptions>
+              </Listbox>
+            </div>
+            <div className="hidden md:flex flex-wrap items-center gap-2">
               {(['all', 'evaluated', 'awaiting'] as const).map((f) => (
                 <button
                   key={f}
@@ -131,18 +132,11 @@ export default function Home() {
                 </button>
               ))}
             </div>
-
-            {/* <button
-              onClick={cycleSort}
-              className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-            >
-              Sort: <span className="font-semibold">{sort.replace('_', ' ')}</span>
-            </button> */}
           </div>
           
-          {sorted.length ? (
+          {searched.length ? (
             <>
-              {sorted.map((s) => (
+              {searched.map((s) => (
                 <div key={s.id ?? `${s.project_id}-${s.date_completed}`} className="lg:hidden mb-4">
                   <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-6">
                     <div className="flex items-center justify-between">
@@ -179,7 +173,7 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-800">     
-                    {sorted.map((s) => (
+                    {searched.map((s) => (
                       <tr
                         key={s.id ?? `${s.project_id}-${s.date_completed}`}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
