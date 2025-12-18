@@ -60,29 +60,31 @@ export default function SubmissionPage() {
       </div>
 
       {/* Answers Accordion */}
-      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-6">
+      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4">
         <h2 className="text-lg font-semibold mb-4">Answers</h2>
         {data.answers.map((a: any, idx: number) => (
           <Disclosure key={idx} as="div" className="mb-2">
             {({ open }) => (
               <>
-                <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <span className="inline-flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+                <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-3 sm:px-4 sm:py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                    <span className="w-fit px-2 py-1 text-[12px] sm:text-xs rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">
                       {a.question.section}
                     </span>
-                    {a.question.project_statement}
-                  </span>
-                  <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
+                    <span className="text-gray-900 dark:text-gray-100">{a.question.project_statement}</span>
+                  </div>
+                  <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 sm:h-6 sm:w-6 text-indigo-500 shrink-0`} />
                 </DisclosureButton>
-                <Transition show={open} enter="transition duration-100 ease-out" enterFrom="transform scale-95 opacity-0" enterTo="transform scale-100 opacity-100" leave="transition duration-75 ease-out" leaveFrom="transform scale-100 opacity-100" leaveTo="transform scale-95 opacity-0">
-                  <DisclosurePanel className="whitespace-pre-wrap px-4 pt-4 pb-2 text-sm text-gray-700 dark:text-gray-300">
+
+                <Transition show={open} enter="transition ease-out duration-100" enterFrom="opacity-0" enterTo="opacity-100" leave="transition ease-in duration-75" leaveFrom="opacity-100" leaveTo="opacity-0">
+                  <DisclosurePanel className="whitespace-pre-wrap px-3 pt-3 pb-2 sm:px-4 sm:pt-4 sm:pb-2 text-sm text-gray-700 dark:text-gray-300">
                     {a.answer}
                   </DisclosurePanel>
                 </Transition>
               </>
             )}
           </Disclosure>
+
         ))}
       </div>
 

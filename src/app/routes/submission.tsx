@@ -62,6 +62,8 @@ export default function Submission() {
   const next = () => step < sections.length - 1 && setStep(step + 1);
   // const back = () => step > 0 && setStep(step - 1);
 
+  const karmaFilled = (answers[KARMA_IX] || '').trim().length > 0;
+
   /* ---------- submit ---------- */
     const handleSubmit = async () => {
         setSubmitting(true);
@@ -94,11 +96,11 @@ export default function Submission() {
         <H1>Make Submission</H1>
         <div className='mb-10'>
             <p className='mb-3 inline-flex gap-2'>
-                <CircleChevronRight />Fill in the information provided to the best of your knowledge.</p>
+                <CircleChevronRight width={20} height={20} />Fill in the information provided to the best of your knowledge.</p>
             <p className='mb-3 inline-flex gap-2'>
-                <CircleChevronRight />Answers are limited to 300 words (1800 characters) to encourage clarity and conciseness.</p>
+                <CircleChevronRight width={20} height={20} />Answers are limited to 300 words (1800 characters) to encourage clarity and conciseness.</p>
             <p className='mb-3 inline-flex gap-2'>
-                <CircleChevronRight />Evaluators will be asked whether they agree, disagree or neither with your answers.
+                <CircleChevronRight width={20} height={20} />Evaluators will be asked whether they agree, disagree or neither with your answers.
             </p>
         </div>
 
@@ -123,7 +125,7 @@ export default function Submission() {
       </div>
 
       {/* Current section */}
-      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-6 space-y-6">
+      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-6">
         <h2 className="text-xl font-semibold">{currentSection}</h2>
 
         {step === 0 && (
@@ -154,7 +156,7 @@ export default function Submission() {
                 </div>
                 <div className='space-y-2'>
                   <div className="flex items-start justify-between">
-                      <label className="font-medium text-gray-800 dark:text-gray-200">Karma ID</label>
+                      <label className="font-medium text-gray-800 dark:text-gray-200">Karma ID (Required)</label>
                       <button
                           type="button"
                           onClick={() => openModal('Karma Project', "You can find this by navigating to your Karma project's page and looking at its URL.")}
@@ -168,6 +170,15 @@ export default function Submission() {
                       value={answers[KARMA_IX] || ''}
                       onChange={e => setAnswers({...answers, [KARMA_IX]: e.target.value})}
                   />
+                                      <div>
+                      <button
+                        type="button"
+                        onClick={() => openModal('Get a Karma ID', "Karma helps projects track fundraising, milestones, and impact. Head over to https://karma.xyz to create a free account.")}
+                        className="text-indigo-600 dark:text-indigo-400 cursor-pointer text-sm"
+                      >
+                        Don't have a Karma ID?
+                      </button>
+                    </div>
                 </div>
             </div>
         )}
@@ -211,7 +222,7 @@ export default function Submission() {
         {step > 0 && (
             <button
                 onClick={() => setStep(step - 1)}
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer"
                 >
                 <ArrowLeft height={16} width={16} className='me-2' /> Back
             </button>
@@ -241,7 +252,12 @@ export default function Submission() {
         ) : (
             <button
                 onClick={next}
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                disabled={!karmaFilled}
+                className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition ${
+                  karmaFilled
+                  ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer'
+                  : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                }`}
                 >
                 Next <ArrowRight height={16} width={16} className='ms-2' />
             </button>

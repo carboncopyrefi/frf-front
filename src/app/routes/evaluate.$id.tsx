@@ -1,5 +1,5 @@
 import { useLoaderData, useNavigate } from 'react-router';
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import type { Route } from './+types/evaluate.$id';
 import { api } from '~/lib/api';
 import type { Submission, Question } from '~/lib/types';
@@ -29,12 +29,13 @@ export default function Evaluate() {
   const { questions, submissionId } = useLoaderData<typeof loader>();
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [step, setStep] = useState(0);
-  const [assessments, setAssessments] = useState<Record<number, 'agree' | 'disagree' | 'neither'>>({});
+  const [assessments, setAssessments] = useState<Record<number, 'agree' | 'disagree' | 'neutral'>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     api.get<Submission>(`submissions/${submissionId}`)
@@ -49,6 +50,11 @@ export default function Evaluate() {
       })
       .catch(() => navigate('/')); // 404 → home
   }, [submissionId, questions, navigate]);
+
+  useEffect(() => {
+    const y = (progressRef.current?.offsetTop ?? 0) - 112;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }, [step]);
 
   if (!submission) return <p className="p-8">Loading submission…</p>;
 
@@ -66,26 +72,26 @@ export default function Evaluate() {
 
   const fmtScore = (v: number | null) => (v === null ? 'N/A' : `${(v * 100).toFixed(1)}%`);
 
-const handleSubmit = async () => {
-  setSubmitting(true);
-  const codeMap = { agree: '1', disagree: '2', neither: '3' } as const;
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const codeMap = { agree: '1', disagree: '2', neither: '3' } as const;
 
-  const payload = {
-    evaluator: 'anonymous',
-    submission_id: submission.id,
-    answers: submission.answers.map((a, idx) => ({
-      question_id: a.question_id,
-      answer: codeMap[assessments[idx]],
-    })),
+    const payload = {
+      evaluator: 'anonymous',
+      submission_id: submission.id,
+      answers: submission.answers.map((a, idx) => ({
+        question_id: a.question_id,
+        answer: codeMap[assessments[idx]],
+      })),
+    };
+    try {
+      await api.post('/evaluation', payload);
+      navigate('/success?from=evaluate');
+    } catch (error) {
+              setError('There was an error submitting your evaluation. Please try again.');
+              setSubmitting(false);
+          }
   };
-  try {
-    await api.post('/evaluation', payload);
-    navigate('/success?from=evaluate');
-  } catch (error) {
-            setError('There was an error submitting your evaluation. Please try again.');
-            setSubmitting(false);
-        }
-};
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -93,15 +99,15 @@ const handleSubmit = async () => {
       <Back />
       <H1>Evaluate Submission</H1>
       <div className='mb-8'>
-        <p className='mb-3 inline-flex gap-2'>
-              <CircleChevronRight />You will be asked to agree, disagree, or neither with a series of statements relating to the project's submission.</p>
-          <p className='mb-3 inline-flex gap-2'>
-              <CircleChevronRight />As much as possible, base your decisions on the answers provided.</p>
-          <p className='mb-3 inline-flex gap-2'>
-              <CircleChevronRight />The project's Karma details are available via the Project Details tab on the right.</p>
+        <p className='mb-3 inline-flex gap-2 items-center'>
+              <CircleChevronRight width={20} height={20} />You will be asked to agree, disagree, or neither with a series of statements relating to the project's submission.</p>
+          <p className='mb-3 inline-flex gap-2 items-center'>
+              <CircleChevronRight width={20} height={20} />As much as possible, base your decisions on the answers provided.</p>
+          <p className='mb-3 inline-flex gap-2 items-center'>
+              <CircleChevronRight width={20} height={20} />The project's Karma details are available via the Project Details tab on the right.</p>
       </div>
       {/* Progress */}
-      <div className="mb-6">
+      <div ref={progressRef} className="mb-6">
         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
           <span>{Object.keys(assessments).length} / {total} assessed</span>
           <span>{pct} %</span>
@@ -118,7 +124,7 @@ const handleSubmit = async () => {
       
 
       {/* Card */}
-      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-6 space-y-6">
+      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-6">
         <h2 className="text-xl font-semibold">{q.section}</h2>
         <div className="space-y-6">
             <div className="space-y-2">
@@ -132,7 +138,7 @@ const handleSubmit = async () => {
 
             <div className="space-y-2 border-t border-gray-800 dark:border-gray-600 pt-4">
                 <div className="flex items-start justify-between">
-                    <label className="font-medium text-gray-800 dark:text-gray-200">Your Decision</label>
+                    <label className="font-medium text-gray-800 dark:text-gray-200">Your Assessment</label>
                     <button
                         onClick={() => setModalOpen(true)}
                         className="text-indigo-600 dark:text-indigo-400 cursor-pointer"
@@ -147,7 +153,7 @@ const handleSubmit = async () => {
 
             {/* Assessment buttons */}
             <div className="flex items-center gap-3">
-            {(['agree', 'disagree', 'neither'] as const).map((opt) => (
+            {(['agree', 'neutral', 'disagree'] as const).map((opt) => (
                 <button
                 key={opt}
                 onClick={() =>

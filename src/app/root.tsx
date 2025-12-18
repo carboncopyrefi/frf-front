@@ -155,7 +155,7 @@ export default function App() {
       </header>
 
       {/* ----- page outlet ----- */}
-      <main className="max-w-7xl mx-auto px-4 lg:py-6">
+      <main className="max-w-7xl mx-auto px-0 lg:py-6">
         <Outlet />
       </main>
 
