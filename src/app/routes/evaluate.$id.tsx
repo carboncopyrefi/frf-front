@@ -100,11 +100,11 @@ export default function Evaluate() {
       <H1>Evaluate Submission</H1>
       <div className='mb-8'>
         <p className='mb-3 inline-flex gap-2 items-center'>
-              <CircleChevronRight width={20} height={20} />You will be asked to agree, disagree, or neither with a series of statements relating to the project's submission.</p>
+              <CircleChevronRight width={20} height={20} className='shrink-0' />You will be asked to agree, disagree, or neither with a series of statements relating to the project's submission.</p>
           <p className='mb-3 inline-flex gap-2 items-center'>
-              <CircleChevronRight width={20} height={20} />As much as possible, base your decisions on the answers provided.</p>
+              <CircleChevronRight width={20} height={20} className='shrink-0' />As much as possible, base your decisions on the answers provided.</p>
           <p className='mb-3 inline-flex gap-2 items-center'>
-              <CircleChevronRight width={20} height={20} />The project's Karma details are available via the Project Details tab on the right.</p>
+              <CircleChevronRight width={20} height={20} className='shrink-0' />We think there is a strong likelihood that projects will use LLMs to write/polish their answers.</p>
       </div>
       {/* Progress */}
       <div ref={progressRef} className="mb-6">

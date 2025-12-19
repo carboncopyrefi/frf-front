@@ -22,6 +22,7 @@ export default function Submission() {
   const { questions } = useLoaderData<typeof loader>();
   const [projects, setProjects] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [chars, setChars] = useState<Record<number, number>>({});
   const navigate = useNavigate();
 
   /* ---------- derive ordered sections ---------- */
@@ -58,6 +59,33 @@ export default function Submission() {
       .catch(() => setProjects([])); // silent fail
   }, []);
 
+  const SAVE_KEY = 'submission-draft';
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ step, answers }));
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [step, answers]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      try {
+        const { step: savedStep, answers: savedAnswers } = JSON.parse(raw);
+        setStep(savedStep ?? 0);
+        setAnswers(savedAnswers ?? {});
+      } catch {
+        /* ignore corrupt draft */
+      }
+    }
+  }, []);
+
+  const handleAnswerChange = (idx: number, val: string) => {
+    setChars((c) => ({ ...c, [idx]: val.length }));
+    setAnswers((a) => ({ ...a, [idx]: val }));
+  };
+
   /* ---------- navigation ---------- */
   const next = () => step < sections.length - 1 && setStep(step + 1);
   // const back = () => step > 0 && setStep(step - 1);
@@ -83,6 +111,7 @@ export default function Submission() {
         };
         try {
             const res = await api.post<{ id: string }>('/submission', payload);
+            localStorage.removeItem(SAVE_KEY);
             navigate(`/submissions/${res.id}`);
         } catch (error) {
             setError('There was an error submitting your answers. Please try again.');
@@ -95,12 +124,12 @@ export default function Submission() {
         <Back />
         <H1>Make Submission</H1>
         <div className='mb-10'>
-            <p className='mb-3 inline-flex gap-2'>
-                <CircleChevronRight width={20} height={20} />Fill in the information provided to the best of your knowledge.</p>
-            <p className='mb-3 inline-flex gap-2'>
-                <CircleChevronRight width={20} height={20} />Answers are limited to 300 words (1800 characters) to encourage clarity and conciseness.</p>
-            <p className='mb-3 inline-flex gap-2'>
-                <CircleChevronRight width={20} height={20} />Evaluators will be asked whether they agree, disagree or neither with your answers.
+            <p className='mb-3 inline-flex gap-2 items-center'>
+                <CircleChevronRight width={20} height={20} className='shrink-0' />Fill in the information provided to the best of your knowledge.</p>
+            <p className='mb-3 inline-flex gap-2 items-center'>
+                <CircleChevronRight width={20} height={20} className='shrink-0' />Answers are limited to 300 words (1800 characters) to encourage clarity and conciseness.</p>
+            <p className='mb-3 inline-flex gap-2 items-center'>
+                <CircleChevronRight width={20} height={20} className='shrink-0' />Evaluators will be asked whether they agree, disagree or neither with your answers.
             </p>
         </div>
 
@@ -185,6 +214,8 @@ export default function Submission() {
 
         {sectionQuestions.map((q, idx) => {
           const globalIndex = questions.indexOf(q);
+
+          
           return (
             <div key={globalIndex} className="space-y-2">
               <div className="flex items-start justify-between">
@@ -206,11 +237,17 @@ export default function Submission() {
                 maxLength={1800}
                 required
                 value={answers[globalIndex] || ''}
-                onChange={(e) =>
-                  setAnswers({ ...answers, [globalIndex]: e.target.value })
-                }
+                onChange={(e) => handleAnswerChange(globalIndex, e.target.value)}
                 placeholder="Your answer…"
               />
+              <div className="flex items-center justify-between mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <span>{chars[globalIndex] ?? 0}/1800</span>
+                {(chars[globalIndex] ?? 0) > 1600 && (
+                  <span className={(chars[globalIndex] ?? 0) === 1800 ? 'text-red-600' : 'text-amber-600'}>
+                    {1800 - (chars[globalIndex] ?? 0)} left
+                  </span>
+                )}
+              </div>
             </div>
           );
         })}
