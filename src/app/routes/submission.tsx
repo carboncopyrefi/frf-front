@@ -9,6 +9,7 @@ import { Autocomplete } from '~/components/Autocomplete';
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
 import { ErrorBanner } from "~/components/ErrorBanner";
+import clsx from 'clsx';
 
 export async function loader(): Promise<{ questions: (Question & { id: string })[] }> {
   return { questions: await api.get<(Question & { id: string })[]>('questions') };
@@ -136,18 +137,28 @@ export default function Submission() {
       {/* Progress bar */}
       <div className="flex items-center mb-8 flex-wrap gap-x-4 gap-y-2">
         {sections.map((s, idx) => (
-          <div key={s} className="flex items-center" onClick={() => setStep(idx)}>
+          <div key={s} className="flex items-center">
             <button
-                className={`
-                w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
-                focus:outline-none focus:ring-2 focus:ring-indigo-500
-                ${idx <= step ? 'bg-indigo-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}
-                `}
+                onClick={() => setStep(idx)}
+                disabled={!karmaFilled}
+                className={clsx(
+                'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500', 
+                {
+                  'bg-indigo-600 text-white cursor-pointer': 
+                    idx <= step,
+                  'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300':
+                    !(idx <= step),
+                  'cursor-not-allowed':
+                    !karmaFilled,
+                  'cursor-pointer':
+                    karmaFilled
+                }
+              )}
                 aria-label={`Go to section ${idx + 1}`}
             >
                 {idx + 1}
             </button>
-            <span className="ml-2 text-sm hidden md:inline cursor-pointer hover:underline">{s}</span>
+            <span className="ml-2 text-sm hidden md:inline">{s}</span>
             {idx < sections.length - 1 && <div className="w-8 h-0.5 bg-gray-200 dark:bg-gray-700 ml-2" />}
           </div>
         ))}

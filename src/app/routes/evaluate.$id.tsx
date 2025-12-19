@@ -136,7 +136,7 @@ export default function Evaluate() {
                 </p>
             </div>
 
-            <div className="space-y-2 border-t border-gray-800 dark:border-gray-600 pt-4">
+            <div className="space-y-2 border-t border-gray-400 dark:border-gray-600 pt-4">
                 <div className="flex items-start justify-between">
                     <label className="font-medium text-gray-800 dark:text-gray-200">Your Assessment</label>
                     <button
@@ -185,7 +185,7 @@ export default function Evaluate() {
         {step !== 0 && (
           <button
             onClick={back}
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer"
           >
             <ArrowLeft height={16} width={16} className='me-2' /> Back
           </button>
@@ -216,7 +216,7 @@ export default function Evaluate() {
           ) : (
             <button
               onClick={next}
-              className="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition cursor-pointer"
             >
               Next <ArrowRight height={16} width={16} className='ms-2' />
             </button>
@@ -290,7 +290,7 @@ export default function Evaluate() {
                   <Disclosure defaultOpen>
                     {({ open }) => (
                       <>
-                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-100 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
                           <span>Links</span>
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
@@ -326,7 +326,7 @@ export default function Evaluate() {
                   <Disclosure>
                     {({ open }) => (
                       <>
-                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 mt-2">
+                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-100 dark:bg-gray-800 px-4 py-4 text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 mt-2">
                           <span>Description</span>
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
@@ -345,7 +345,7 @@ export default function Evaluate() {
                   <Disclosure>
                     {({ open }) => (
                       <>
-                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 mt-2">
+                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-100 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 mt-2">
                           <span>Karma Updates</span>
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
@@ -373,7 +373,7 @@ export default function Evaluate() {
                   <Disclosure>
                     {({ open }) => (
                       <>
-                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 mt-2">
+                        <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-100 dark:bg-gray-800 px-4 py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 mt-2">
                           <span>Past Submissions</span>
                           <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 text-indigo-500`} />
                         </DisclosureButton>
