@@ -74,7 +74,7 @@ export default function Evaluate() {
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    const codeMap = { agree: '1', disagree: '2', neither: '3' } as const;
+    const codeMap = { agree: '1', disagree: '2', neutral: '3' } as const;
 
     const payload = {
       evaluator: 'anonymous',
@@ -100,7 +100,7 @@ export default function Evaluate() {
       <H1>Evaluate Submission</H1>
       <div className='mb-8'>
         <p className='mb-3 inline-flex gap-2 items-center'>
-              <CircleChevronRight width={20} height={20} className='shrink-0' />You will be asked to agree, disagree, or neither with a series of statements relating to the project's submission.</p>
+              <CircleChevronRight width={20} height={20} className='shrink-0' />You will be asked whether you agree, disagree, or are neutral with a series of statements relating to the project's submission.</p>
           <p className='mb-3 inline-flex gap-2 items-center'>
               <CircleChevronRight width={20} height={20} className='shrink-0' />As much as possible, base your decisions on the answers provided.</p>
           <p className='mb-3 inline-flex gap-2 items-center'>
