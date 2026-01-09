@@ -11,7 +11,13 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
     cjsInterop({
-      dependencies: ['@walletconnect/logger'],
+      dependencies: ['@walletconnect/logger', '@reown/appkit-wallet'],
     }),
   ],
+  ssr: {
+    noExternal: ['@walletconnect/logger', '@reown/appkit-wallet'],
+  },
+  optimizeDeps: {
+    include: ['@walletconnect/logger', '@reown/appkit-wallet'],
+  },
 });
