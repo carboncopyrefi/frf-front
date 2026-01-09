@@ -8,4 +8,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@walletconnect/logger'],
   },
+  ssr: {
+    noExternal: ['@walletconnect/logger'],
+  },
 });
