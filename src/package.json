@@ -6,8 +6,7 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc",
-    "postinstall": "patch-package"
+    "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -40,7 +39,6 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "buffer": "^6.0.3",
-    "patch-package": "^8.0.1",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "util": "^0.12.5",
