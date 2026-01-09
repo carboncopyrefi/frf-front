@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from "react"; // ← new
+import { useEffect, useState, Fragment } from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -6,12 +6,48 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { Link } from "react-router";
 import { Moon, Sun, Menu } from 'lucide-react';
 import { Transition } from '@headlessui/react';
+import ClientOnly from '~/components/ClientOnly'
+import { createAppKit } from '@reown/appkit/react'
+import { WagmiProvider } from 'wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { projectId, metadata, networks, wagmiAdapter } from './config'
+import ConnectButton from '~/components/ConnectButton'
+import { SubmissionButton } from '~/components/SubmissionButton'
+import { createSIWE  } from './lib/siwe-stubs'
+import ServerError from "./routes/errors/server-error";
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+
+const queryClient = new QueryClient()
+const siweConfig = createSIWE(networks);
+
+createAppKit({
+  adapters: [wagmiAdapter],
+  networks,
+  siweConfig,
+  projectId,
+  metadata,
+  features: {
+    analytics: true,
+    email: false,
+    socials: false,
+  },
+  themeVariables: {
+    "--apkt-color-mix": "#4f39f6",
+    "--apkt-accent": "#ffffff",
+    "--apkt-font-family": "Arial",
+    "--apkt-border-radius-master": "12px",
+    "--apkt-font-size-master": "",
+    "--apkt-color-mix-strength": 40,
+  },
+})
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -36,7 +72,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <ClientOnly>
+          <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </WagmiProvider>
+        </ClientOnly>
+        
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -62,6 +105,15 @@ export default function App() {
     localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
 
+  const navigation = useNavigation();
+  useEffect(() => {
+    if (navigation.state === 'loading') {
+      NProgress.start();
+    } else {
+      NProgress.done();
+    }
+  }, [navigation.state]);
+
   return (
     <div
       className={`
@@ -85,12 +137,8 @@ export default function App() {
 
             {/* Desktop buttons */}
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                to="/submission"
-                className="px-3 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition"
-              >
-                Make Submission
-              </Link>
+              <ConnectButton />
+              <SubmissionButton />
               <button
                 onClick={() => setDark((v) => !v)}
                 className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
@@ -141,13 +189,8 @@ export default function App() {
           >
             <div className="md:hidden pb-4">
               <div className="flex flex-col items-stretch gap-3 mt-3">
-                <Link
-                  to="/submission"
-                  onClick={() => setMenuOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium text-center"
-                >
-                  Make Submission
-                </Link>
+                <SubmissionButton mobile onClick={() => setMenuOpen(false)} />
+
               </div>
             </div>
           </Transition>
@@ -183,35 +226,10 @@ export default function App() {
           </div>
         </div>
       </footer>
-    </div>
+    </div>  
   );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
-
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
-  }
-
-  return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
-  );
+  return <ServerError error={error} />;
 }

@@ -7,5 +7,6 @@ export default [
     route("submissions/:id", "routes/submission.$id.tsx"),
     route("evaluate/:id", "routes/evaluate.$id.tsx"),
     route("success", "routes/success.tsx"),
-    route("about", "routes/about.tsx")
+    route("about", "routes/about.tsx"),
+    route("*", "routes/errors/not-found.tsx"),
 ] satisfies RouteConfig;

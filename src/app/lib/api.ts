@@ -6,12 +6,18 @@ const API_BASE =
 
 async function request<T = unknown>(
   endpoint: string,
-  init?: RequestInit
+  init?: RequestInit & { token?: string }
 ): Promise<T> {
    const url = /https?:\/\//.test(endpoint)
     ? endpoint.trim()                          
     : `${API_BASE.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`;
-  const res = await fetch(url, { ...init, headers: { ...init?.headers } });
+
+  const headers: HeadersInit = {
+    ...init?.headers,
+    ...(init?.token && { Authorization: `Bearer ${init.token}` }), // JWT
+  };  
+
+  const res = await fetch(url, { ...init, headers });
 
   if (!res.ok) {
     const text = await res.text().catch(() => 'Network error');
@@ -26,31 +32,34 @@ async function request<T = unknown>(
 }
 
 export const api = {
-  get<T = unknown>(endpoint: string) {
-    return request<T>(endpoint, { method: 'GET' });
+  get<T = unknown>(endpoint: string, token: string | null = null) {
+    return request<T>(endpoint, { method: 'GET', token: token ?? undefined });
   },
-  post<T = unknown>(endpoint: string, body: unknown) {
+  post<T = unknown>(endpoint: string, body: unknown, token: string | null = null) {
     return request<T>(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      token: token ?? undefined,
     });
   },
-  put<T = unknown>(endpoint: string, body: unknown) {
+  put<T = unknown>(endpoint: string, body: unknown, token: string | null = null) {
     return request<T>(endpoint, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      token: token ?? undefined,
     });
   },
-  patch<T = unknown>(endpoint: string, body: unknown) {
+  patch<T = unknown>(endpoint: string, body: unknown, token: string | null = null) {
     return request<T>(endpoint, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      token: token ?? undefined,
     });
   },
-  delete<T = unknown>(endpoint: string) {
-    return request<T>(endpoint, { method: 'DELETE' });
+  delete<T = unknown>(endpoint: string, token: string | null = null) {
+    return request<T>(endpoint, { method: 'DELETE', token: token ?? undefined, });
   },
 } as const;

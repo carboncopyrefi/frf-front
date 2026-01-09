@@ -5,6 +5,8 @@ import { api } from '~/lib/api';
 import type { CategoryPayload } from '~/lib/types';
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import { ChevronDownIcon } from 'lucide-react';
+import { useSiweAuth } from '~/lib/auth'
+import { useAppKitAccount } from '@reown/appkit/react';
 
 /* ------------------------------------------------------------------ */
 /* React-Router 7 loader                                              */
@@ -32,6 +34,8 @@ export default function Home() {
   const data = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<'all' | 'evaluated' | 'awaiting'>('all');
+  const { authenticated, role } = useSiweAuth()
+  const { address } = useAppKitAccount()
 
   /* ------------ derive state from URL (search + sort) ------------- */
   const search = searchParams.get('q') ?? '';
@@ -52,6 +56,11 @@ export default function Home() {
   const formatScore = (v: number | null) =>
     v === null || v === 0 ? 'Awaiting Evaluation' : `${(v * 100).toFixed(1)}%`;
 
+  const scoredOnly = data.submissions.filter((s) => s.score !== null);
+  const avg = scoredOnly.length
+    ? scoredOnly.reduce((a, b) => a + b.score!, 0) / scoredOnly.length
+    : 0;
+
   return (
     <>
       <div className="px-4">
@@ -64,11 +73,7 @@ export default function Home() {
           <article className="p-4 rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800">
             <p className="text-sm text-gray-500 dark:text-gray-400">Average Funding Readiness</p>
             <p className="text-2xl font-semibold">
-              {formatScore(
-                data.submissions.length
-                  ? data.submissions.reduce((a, b) => a + (b.score ?? 0), 0) / data.submissions.length
-                  : 0
-              )}
+              {formatScore(avg)}
             </p>
           </article>
           <article className="p-4 rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800">
@@ -138,29 +143,39 @@ export default function Home() {
             {searched.length ? (
               <>
                 <div className="lg:hidden md:grid md:grid-cols-2 md:gap-4">
-                  {searched.map((s) => (
-                    <div key={s.id ?? `${s.project_id}-${s.date_completed}`} className='mb-4'>
-                      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-6">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-gray-800 dark:text-gray-200">{s.project_name}</span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(s.date_completed).toLocaleDateString()}</span>
-                        </div>
+                  {searched.map((s) => {
+                    const hasEvaluatedThis = s.evaluations?.some((e: any) => e.evaluator?.toLowerCase() === address?.toLowerCase());
+                    const isOwner = s.owner?.toLowerCase() === address?.toLowerCase();
+                    const showEvaluateButton = authenticated && role === 'evaluator' && address && !hasEvaluatedThis && !isOwner;
 
-                        <div className="grid grid-cols-1 space-y-3 sm:space-y-0 sm:grid-cols-3 md:grid-cols-1 md:space-y-3 gap-2 text-sm">
-                          <div>
-                            <p className="text-gray-500 dark:text-gray-400">Funding Readiness</p><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${(s.score ?? 0) >= 0.8 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : (s.score ?? 0) >= 0.5 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
-                            {formatScore(s.score)}</span>
+                    return (
+                      <div key={s.id ?? `${s.project_id}-${s.date_completed}`} className='mb-4'>
+                        <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-6">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-gray-800 dark:text-gray-200">{s.project_name}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(s.date_completed).toLocaleDateString()}</span>
                           </div>
-                          <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{s.evaluation_count}</p></div>
-                          <div><p className="text-gray-500 dark:text-gray-400">Last Evaluation</p><p>{s.last_evaluation_date ? new Date(s.last_evaluation_date).toLocaleDateString() : 'N/A'}</p></div>
-                        </div>
-                        <div className="gap-2 grid grid-cols-2">
-                          <Link to={`/evaluate/${s.id}`} className="flex items-center justify-center w-full px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">Evaluate</Link>
-                          <Link to={`/projects/${s.project_name.toLowerCase().replace(" ", "-")}`} className="flex items-center justify-center w-full px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium">View</Link>
+
+                          <div className="grid grid-cols-1 space-y-3 sm:space-y-0 sm:grid-cols-3 md:grid-cols-1 md:space-y-3 gap-2 text-sm">
+                            <div>
+                              <p className="text-gray-500 dark:text-gray-400">Funding Readiness</p><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${(s.score ?? 0) >= 0.8 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : (s.score ?? 0) >= 0.5 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
+                              {formatScore(s.score)}</span>
+                            </div>
+                            <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{s.evaluation_count}</p></div>
+                            <div><p className="text-gray-500 dark:text-gray-400">Last Evaluation</p><p>{s.last_evaluation_date ? new Date(s.last_evaluation_date).toLocaleDateString() : 'N/A'}</p></div>
+                          </div>
+                          <div className="gap-2 grid grid-cols-2">
+                            {showEvaluateButton && (
+                              <Link to={`/evaluate/${s.id}`} className="flex items-center justify-center w-full px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">
+                                Evaluate
+                              </Link>
+                            )}
+                            <Link to={`/projects/${s.project_name.toLowerCase().replace(" ", "-")}`} className="flex items-center justify-center w-full px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium">View</Link>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <table className="hidden lg:table w-full text-sm">
                   <thead className="bg-gray-100/50 dark:bg-gray-800/50">
@@ -174,7 +189,11 @@ export default function Home() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-800">     
-                      {searched.map((s) => (
+                      {searched.map((s) => {
+                        const hasEvaluatedThis = s.evaluations?.some((e: any) => e.evaluator?.toLowerCase() === address?.toLowerCase());
+                        const isOwner = s.owner?.toLowerCase() === address?.toLowerCase();
+                        const showEvaluateButton = authenticated && role === 'evaluator' && address && !hasEvaluatedThis && !isOwner;
+                        return (
                         <tr
                           key={s.id ?? `${s.project_id}-${s.date_completed}`}
                           className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
@@ -207,12 +226,11 @@ export default function Home() {
                           </td>
                           <td className='text-right pe-4 py-3'>
                             <div className="inline-flex items-center gap-2">
-                              <Link
-                                to={`/evaluate/${s.id}`}
-                                className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition"
-                              >
-                                Evaluate
-                              </Link>
+                              {showEvaluateButton && (
+                                <Link to={`/evaluate/${s.id}`} className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
+                                  Evaluate
+                                </Link>
+                              )}
                               <Link
                                 to={`/projects/${s.project_name.toLowerCase().replace(" ", "-")}`}
                                 className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
@@ -222,7 +240,8 @@ export default function Home() {
                             </div>
                           </td>
                         </tr>
-                      ))}
+                        );
+                    })}
                   </tbody>
                 </table>  
               </>

@@ -25,7 +25,6 @@ export function Autocomplete({
     o.label.toLowerCase().includes(input.toLowerCase())
   );
 
-  console.log(loading);
   if (loading)
     return <div className="animate-pulse h-10 bg-gray-200 dark:bg-gray-700 rounded-lg" />;
 

@@ -4,10 +4,12 @@ import type { Route } from './+types/submission.$id';
 import { api } from '~/lib/api';
 import { Disclosure, Transition, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { StatementModal } from '~/components/StatementModal';
-import { ChevronUpIcon } from 'lucide-react';
+import { ChevronRightIcon, BadgeCheck } from 'lucide-react';
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
 import { Share } from "~/components/Share";
+import { useSiweAuth } from '~/lib/auth'
+import { useAppKitAccount } from '@reown/appkit/react';
 
 /* ---------- loader (only id) ---------- */
 export async function loader({ params }: Route.LoaderArgs) {
@@ -22,6 +24,8 @@ export function meta({}: Route.MetaArgs) {
 export default function SubmissionPage() {
   const submissionId = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const { authenticated, role } = useSiweAuth()
+  const { address } = useAppKitAccount()
 
   const [data, setData] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,6 +39,15 @@ export default function SubmissionPage() {
 
   if (!data) return <p className="p-8">Loading submission…</p>;
 
+  const alreadyEvaluated = authenticated &&
+    role === 'evaluator' &&
+    address &&
+    data.evaluations.some((e: any) => e.evaluator.toLowerCase() === address.toLowerCase())
+
+  const hasEvaluatedThis = data.evaluations?.some((e: any) => e.evaluator?.toLowerCase() === address?.toLowerCase());
+  const isOwner = data.owner?.toLowerCase() === address?.toLowerCase();
+  const showEvaluateButton = authenticated && role === 'evaluator' && address && !hasEvaluatedThis && !isOwner;
+
   /* ---------- helpers ---------- */
   const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleDateString() : 'N/A');
   const fmtScore = (v: number | null) => (v === null ? 'N/A' : `${(v * 100).toFixed(1)}%`);
@@ -45,18 +58,46 @@ export default function SubmissionPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <Back />
-      <H1 className='mb-0'>{data.project_name}</H1>
-      <Share shareUrl={shareUrl} />
+      <H1 className='mb-0 flex flex-row items-center gap-2'>{data.project_name}<Link to={`${"https://optimism.easscan.org/attestation/view/" + data.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' width={28} height={28} /></Link></H1>
+      <div className='flex items-center justify-between mb-5'>
+        <Share shareUrl={shareUrl} />
+        {showEvaluateButton && (
+          <Link
+            to={`/evaluate/${data.id}`}
+            className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
+              Evaluate
+          </Link>
+        )}
+      </div>
       {/* Header */}
       <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-6 space-y-2 mb-6">
-        <h1 className="text-2xl font-semibold"></h1>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-          <div><p className="text-gray-500 dark:text-gray-400">Date completed</p><p>{fmtDate(data.date_completed)}</p></div>
+          <div><p className="text-gray-500 dark:text-gray-400">Date Completed</p><p>{fmtDate(data.date_completed)}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Category</p><p>{data.category.name}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{data.evaluation_count}</p></div>
-          <div><p className="text-gray-500 dark:text-gray-400">Last Evaluated</p><p>{fmtDate(data.last_evaluation_date)}</p></div>
+          <div><p className="text-gray-500 dark:text-gray-400">Last Evaluation</p><p>{fmtDate(data.last_evaluation_date)}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Funding Readiness</p><p>{fmtScore(data.score)}</p></div>
         </div>
+      </div>
+
+      {/* Evaluations */}
+      <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 mb-6">
+        <h2 className="text-lg font-semibold mb-4">Evaluations</h2>
+        {data.evaluations.length === 0 ? (
+          <p className="text-sm text-gray-500 dark:text-gray-400">Awaiting evaluations</p>
+        ) : (
+        data.evaluations.map((e: any) => (
+          <div
+            key={e.id}
+            className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-3 sm:px-4 sm:py-4 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <span>{fmtDate(e.date_completed)}</span>
+            <span>{e.evaluator}</span>
+            <span>{fmtScore(e.score)}</span>
+            <span><Link to={`${"https://optimism.easscan.org/attestation/view/" + e.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' /></Link></span>
+          </div>
+        ))
+      )}
       </div>
 
       {/* Answers Accordion */}
@@ -68,12 +109,12 @@ export default function SubmissionPage() {
               <>
                 <DisclosureButton className="flex w-full justify-between rounded-lg bg-gray-50 dark:bg-gray-800 px-3 py-3 sm:px-4 sm:py-4 text-left text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
                   <div className="flex flex-col lg:flex-row lg:items-center gap-2">
-                    <span className="w-fit px-2 py-1 text-[12px] sm:text-xs rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">
+                    <span className="w-fit px-2 py-1 text-[12px] sm:text-xs rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                       {a.question.section}
                     </span>
                     <span className="text-gray-900 dark:text-gray-100">{a.question.project_statement}</span>
                   </div>
-                  <ChevronUpIcon className={`${open ? 'rotate-180' : ''} h-5 w-5 sm:h-6 sm:w-6 text-indigo-500 shrink-0`} />
+                  <ChevronRightIcon className={`${open ? 'rotate-90' : ''} h-5 w-5 sm:h-6 sm:w-6 text-indigo-500 shrink-0`} />
                 </DisclosureButton>
 
                 <Transition show={open} enter="transition ease-out duration-100" enterFrom="opacity-0" enterTo="opacity-100" leave="transition ease-in duration-75" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -84,7 +125,6 @@ export default function SubmissionPage() {
               </>
             )}
           </Disclosure>
-
         ))}
       </div>
 

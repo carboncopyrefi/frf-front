@@ -15,7 +15,7 @@ export function Share({ shareUrl }: { shareUrl: string }) {
   };
 
   return (
-    <p className="text-sm inline-flex items-center gap-2 mb-5">
+    <p className="text-sm inline-flex items-center gap-2">
       {shareUrl}
       <button
         onClick={copy}

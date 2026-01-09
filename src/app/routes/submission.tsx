@@ -4,12 +4,13 @@ import type { Route } from './+types/submission';
 import { api } from '~/lib/api';
 import type { Question } from '~/lib/types';
 import { StatementModal } from '~/components/StatementModal';
-import { Info, CircleChevronRight, ArrowLeft, ArrowRight } from 'lucide-react'
+import { Info, CircleChevronRight, ArrowLeft, ArrowRight, CircleCheck, CircleX } from 'lucide-react'
 import { Autocomplete } from '~/components/Autocomplete';
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
 import { ErrorBanner } from "~/components/ErrorBanner";
 import clsx from 'clsx';
+import { useSiweAuth } from '~/lib/auth'
 
 export async function loader(): Promise<{ questions: (Question & { id: string })[] }> {
   return { questions: await api.get<(Question & { id: string })[]>('questions') };
@@ -25,6 +26,15 @@ export default function Submission() {
   const [error, setError] = useState<string | null>(null);
   const [chars, setChars] = useState<Record<number, number>>({});
   const navigate = useNavigate();
+  const { authenticated, role} = useSiweAuth()
+
+  if (!authenticated) {
+    return (
+      <div className="p-8 text-center">
+        <p>Please connect your wallet and sign in to make a submission.</p>
+      </div>
+    )
+  }
 
   /* ---------- derive ordered sections ---------- */
   const NAME_IX   = -2; // synthetic
@@ -42,6 +52,8 @@ export default function Submission() {
   const isLast = step === sections.length - 1;
 
   const allFilled = sectionQuestions.every((q) => (answers[questions.indexOf(q)] || '').trim() !== '');
+  const [accepted, setAccepted] = useState(false);
+  const canSubmit = allFilled && accepted;
 
 
   /* ---------- modal ---------- */
@@ -53,6 +65,32 @@ export default function Submission() {
     setModalContent({ title, text });
     setModalOpen(true);
   };
+
+  const [karmaStatus, setKarmaStatus] = useState<'idle' | 'checking' | 'found' | 'notFound' | 'error'>('idle');
+
+  useEffect(() => {
+    const id = answers[KARMA_IX]?.trim();
+    if (!id) return setKarmaStatus('idle');
+
+    setKarmaStatus('checking');
+    const t = setTimeout(async () => {
+      try {
+        const res = await api.get<Response>(`/karma/${id}`);
+        if (res.status == 200) {
+          setKarmaStatus('found');
+        }
+        else if (res.status == 404) {
+          setKarmaStatus('notFound');
+        } else {
+          setKarmaStatus('error')
+        }
+      } catch {
+        setKarmaStatus('idle'); // silent fail
+      }
+    }, 1200); // 600 ms debounce
+
+    return () => clearTimeout(t);
+  }, [answers[KARMA_IX]]);
 
   useEffect(() => {
     api.get<any>('https://api.carboncopy.news/projects')
@@ -95,29 +133,32 @@ export default function Submission() {
 
   /* ---------- submit ---------- */
     const handleSubmit = async () => {
-        setSubmitting(true);
-        const payload = {
-            project_id: String(
-                answers[NAME_IX]
-                    ? projects.find((p) => p.name === answers[NAME_IX])?.id ?? ''
-                    : ''
-            ),
-            project_name: answers[NAME_IX] || '',
-            karma_gap_id: answers[KARMA_IX] || '',
-            answers: questions.map(q => ({
-            question_id: q.id,
-            answer: answers[questions.indexOf(q)] || '',
-            })),
-            category: CATEGORY,
-        };
-        try {
-            const res = await api.post<{ id: string }>('/submission', payload);
-            localStorage.removeItem(SAVE_KEY);
-            navigate(`/submissions/${res.id}`);
-        } catch (error) {
-            setError('There was an error submitting your answers. Please try again.');
-            setSubmitting(false);
-        }
+      if (!authenticated) return setError("Please connect your wallet and sign in first.")
+      setSubmitting(true);
+      const payload = {
+          project_id: String(
+              answers[NAME_IX]
+                  ? projects.find((p) => p.name === answers[NAME_IX])?.id ?? ''
+                  : ''
+          ),
+          project_name: answers[NAME_IX] || '',
+          karma_id: answers[KARMA_IX] || '',
+          answers: questions.map(q => ({
+          question_id: q.id,
+          answer: answers[questions.indexOf(q)] || '',
+          })),
+          category: CATEGORY,
+      };
+
+      try {
+          const token = localStorage.getItem('siwe-jwt')
+          const res = await api.post<{ id: string }>('/submission', payload, token);
+          localStorage.removeItem(SAVE_KEY);
+          navigate(`/submissions/${res.id}`);
+      } catch (error) {
+          setError('There was an error submitting your answers. Please try again.');
+          setSubmitting(false);
+      }
     };
 
   return (
@@ -210,15 +251,38 @@ export default function Submission() {
                       value={answers[KARMA_IX] || ''}
                       onChange={e => setAnswers({...answers, [KARMA_IX]: e.target.value})}
                   />
-                                      <div>
-                      <button
-                        type="button"
-                        onClick={() => openModal('Get a Karma ID', "Karma helps projects track fundraising, milestones, and impact. Head over to https://karma.xyz to create a free account.")}
-                        className="text-indigo-600 dark:text-indigo-400 cursor-pointer text-sm"
-                      >
-                        Don't have a Karma ID?
-                      </button>
-                    </div>
+                  <div className="mt-1 flex items-center gap-2 text-xs">
+                    {karmaStatus === 'checking' && (
+                      <span>Checking…</span>
+                    )}
+                    {karmaStatus === 'found' && (
+                      <span className="text-emerald-600">
+                        <CircleCheck className="w-4 h-4 inline-block align-middle mr-1" />
+                        Karma ID found
+                      </span>
+                    )}
+                    {karmaStatus === 'notFound' && (
+                      <span className="text-red-600">
+                        <CircleX className="w-4 h-4 inline-block align-middle mr-1" />
+                        Karma ID not found. Please enter a correct Karma ID.
+                      </span>
+                    )}
+                    {karmaStatus === 'error' && (
+                      <span className="text-red-600">
+                        <CircleX className="w-4 h-4 inline-block align-middle mr-1" />
+                        There was an error verifying your Karma ID. Your submission may fail.
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => openModal('Get a Karma ID', "Karma helps projects track fundraising, milestones, and impact. Head over to https://karma.xyz to create a free account.")}
+                      className="text-indigo-600 dark:text-indigo-400 cursor-pointer text-sm"
+                    >
+                      Don't have a Karma ID?
+                    </button>
+                  </div>
                 </div>
             </div>
         )}
@@ -263,6 +327,23 @@ export default function Submission() {
           );
         })}
       </div>
+      {step === sections.length - 1 && (
+        <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 mt-6 space-y-6">
+          <h2 className="text-xl font-semibold">Attestation</h2>
+          <div className="flex items-center gap-3">
+            <input
+              id="accept"
+              type="checkbox"
+              required
+              checked={accepted}
+              onChange={(e) => setAccepted(e.target.checked)}
+              className="h-16 w-16 md:h-12 md:w-12 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            />
+            <label htmlFor="accept" className="text-md text-gray-700 dark:text-gray-300">
+              I hereby attest that the information provided is correct. Submission will mint an attestation on Optimism via the Ethereum Attestation Service (EAS).          </label>
+          </div>
+        </div>
+      )}
 
     {/* Navigation */}
     <div className="flex items-center justify-end gap-3 mt-6">
@@ -278,12 +359,11 @@ export default function Submission() {
         {isLast ? (
           <button
             onClick={handleSubmit}
-            disabled={!allFilled || submitting}
-            className={`px-4 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
-              allFilled && !submitting
-                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-            }`}
+            disabled={!canSubmit || submitting}
+            className={clsx('px-4 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2', {
+              'bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer': canSubmit && !submitting,
+              'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed': !canSubmit || submitting,
+            })}
           >
             {submitting ? (
               <>

@@ -8,7 +8,8 @@ export type Submission = {
   score: number | null;
   // keep the rest if you need them later
   id?: string;
-  karma_gap_id?: string;
+  karma_id?: string;
+  eas_uid: string;
   evaluation_count?: number;
   last_evaluation_date?: string; // ISO-8601
   category?: {
@@ -19,6 +20,8 @@ export type Submission = {
   answers?: { question_id: string; answer: string }[];
   karma_data?: any;
   past_submissions?: any;
+  owner?: string;
+  evaluations?: Evaluation[];
 };
 
 // Full payload from GET /categories/{slug}
@@ -26,6 +29,7 @@ export type CategoryPayload = {
   name: string;
   description: string;
   slug: string;
+  evaluators: [];
   submissions: Submission[];
 };
 
@@ -44,5 +48,7 @@ export type Evaluation = {
   project_name: string;
   answers: { question_id: string; answer: string }[];
   category: string;
+  evaluator: string;
+  eas_uid: string;
 };
 
