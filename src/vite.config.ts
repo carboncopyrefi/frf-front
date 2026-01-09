@@ -16,7 +16,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@walletconnect/logger': path.resolve(__dirname, 'shims/walletconnect-logger.js'),
+      '@walletconnect/logger': path.resolve(__dirname, 'shims/wallet-connect-logger.js'),
     },
   },
   ssr: {
