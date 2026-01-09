@@ -6,7 +6,7 @@ export default function ConnectButton() {
   const { walletInfo } = useWalletInfo();
   const ROOT_URL = import.meta.env.VITE_ROOT_URL;
 
-  const image = "blob:" + ROOT_URL + "/ee9dd529-d140-4245-ac74-badafe1ca3d0"
+  const image = "blob:" + ROOT_URL + "/25afb689-215f-4570-951e-d09816ca1832"
   if (isConnected) {
     return (
       <div className="flex items-center gap-2">
