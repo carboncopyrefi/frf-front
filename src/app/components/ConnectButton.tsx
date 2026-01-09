@@ -1,4 +1,4 @@
-import { useAppKit, useAppKitAccount, useAppKitNetwork, useWalletInfo } from '@reown/appkit/react'
+import { useAppKit, useAppKitAccount, useWalletInfo } from '@reown/appkit/react'
 
 export default function ConnectButton() {
   const { open } = useAppKit()
