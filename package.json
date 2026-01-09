@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@ethereum-attestation-service/eas-sdk": "^2.9.0"
-  }
-}
