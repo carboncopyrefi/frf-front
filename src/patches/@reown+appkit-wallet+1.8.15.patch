@@ -1,0 +1,11 @@
+diff --git a/dist/esm/src/W3mFrameLogger.js b/dist/esm/src/W3mFrameLogger.js
+index 1234567..abcdefg 100644
+--- a/dist/esm/src/W3mFrameLogger.js
++++ b/dist/esm/src/W3mFrameLogger.js
+@@ -1,4 +1,5 @@
+-import { generateChildLogger, generatePlatformLogger, getDefaultLoggerOptions } from '@walletconnect/logger';
++import pkg from '@walletconnect/logger';
++const { generateChildLogger, generatePlatformLogger, getDefaultLoggerOptions } = pkg;
+ import { DEFAULT_LOG_LEVEL } from './W3mFrameConstants.js';
+ export class W3mFrameLogger {
+     constructor(projectId) {
