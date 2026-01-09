@@ -2,13 +2,16 @@ import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { cjsInterop } from 'vite-plugin-cjs-interop';
+
 
 export default defineConfig({
-  plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
-  optimizeDeps: {
-    include: ['@walletconnect/logger'],
-  },
-  ssr: {
-    noExternal: ['@walletconnect/logger'],
-  },
+  plugins: [
+    tailwindcss(),
+    reactRouter(),
+    tsconfigPaths(),
+    cjsInterop({
+      dependencies: ['@walletconnect/logger'],
+    }),
+  ],
 });
