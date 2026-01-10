@@ -101,7 +101,7 @@ export default function Evaluate() {
     try {
       const token = localStorage.getItem('siwe-jwt')
       const result = await api.post('/evaluation', payload, token);
-      navigate(`/success?from=evaluatee&score=${result.score}`);
+      navigate(`/success?from=evaluate&score=${result.score}`);
     } catch (err: any) {
         const msg = err.message ?? ''
         if (msg.includes('409')) {
