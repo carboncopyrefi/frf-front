@@ -1,12 +1,17 @@
-import { useAppKit, useAppKitAccount, useWalletInfo } from '@reown/appkit/react'
+import { useAppKit, useAppKitAccount, useWalletInfo, useAppKitNetwork } from '@reown/appkit/react'
 
 export default function ConnectButton() {
   const { open } = useAppKit()
   const { isConnected, address } = useAppKitAccount()
   const { walletInfo } = useWalletInfo();
-  const ROOT_URL = import.meta.env.VITE_ROOT_URL;
+  const { caipNetwork } = useAppKitNetwork();
+  const VITE_REOWN_ID = import.meta.env.VITE_REOWN_ID;
 
-  const image = "blob:" + ROOT_URL + "/25afb689-215f-4570-951e-d09816ca1832"
+  const networkImage = caipNetwork?.assets?.imageUrl || 
+    (caipNetwork?.assets?.imageId ? 
+      `https://explorer-api.walletconnect.com/v3/logo/lg/${caipNetwork.assets.imageId}?projectId=${VITE_REOWN_ID}` : 
+      null)
+
   if (isConnected) {
     return (
       <div className="flex items-center gap-2">
@@ -14,12 +19,14 @@ export default function ConnectButton() {
           onClick={() => open()}
           className="border border-indigo-600 hover:bg-indigo-700 text-indigo-600 hover:text-white text-sm font-medium py-1.5 px-3 rounded-full cursor-pointer flex items-center gap-2"
         >
-          <img src={image} className="w-4 h-4 rounded-full" alt="Network logo" />
-            <img
-              src={walletInfo?.icon}
-              alt="Wallet logo"
-              className="w-4 h-4 rounded-full"
-            />
+          {networkImage && (
+            <img src={networkImage} className="w-4 h-4 rounded-full" alt="Network logo" />
+          )}
+          <img
+            src={walletInfo?.icon}
+            alt="Wallet logo"
+            className="w-4 h-4 rounded-full"
+          />
           <span className="text-sm font-medium">
             {address ? `${address.slice(0, 8)}...${address.slice(-4)}` : 'Connected'}
           </span>

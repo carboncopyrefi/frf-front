@@ -88,6 +88,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+
+  NProgress.configure({
+    showSpinner: false,
+  });
+
   /* ---------- dark-mode ---------- */
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -189,6 +194,7 @@ export default function App() {
           >
             <div className="md:hidden pb-4">
               <div className="flex flex-col items-stretch gap-3 mt-3">
+                <ConnectButton />
                 <SubmissionButton mobile onClick={() => setMenuOpen(false)} />
 
               </div>
