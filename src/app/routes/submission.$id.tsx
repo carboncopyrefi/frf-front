@@ -105,7 +105,7 @@ export default function SubmissionPage() {
             <span>{fmtDate(e.date_completed)}</span>
             <span>{e.evaluator}</span>
             <span>{fmtScore(e.score)}</span>
-            <span><Link to={`${easscanUrl + data.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' /></Link></span>
+            <span><Link to={`${easscanUrl + e.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' /></Link></span>
           </div>
         ))
       )}
