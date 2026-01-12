@@ -11,7 +11,7 @@ export const metadata = {
   name: 'Funding Readiness Framework by CARBON Copy',
   description: 'Evaluations on Optimism',
   url: 'https://frf-front.vercel.app',
-  icons: ['https://carboncopy.news/favicon.png']
+  icons: ['https://carboncopy.news/images/logo.png']
 }
 export const networks = [optimism] as [AppKitNetwork, ...AppKitNetwork[]]
 

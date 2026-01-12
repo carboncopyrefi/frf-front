@@ -55,10 +55,12 @@ export default function SubmissionPage() {
   const rootUrl = import.meta.env.VITE_ROOT_URL;
   const shareUrl= rootUrl + `/projects/${data.project_name.toLowerCase().replace(" ", "-")}`;
 
+  const easscanUrl = import.meta.env.VITE_EASSCAN_URL;
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <Back />
-      <H1 className='mb-0 flex flex-row items-center gap-2'>{data.project_name}<Link to={`${"https://optimism.easscan.org/attestation/view/" + data.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' width={28} height={28} /></Link></H1>
+      <H1 className='mb-0 flex flex-row items-center gap-2'>{data.project_name}<Link to={`${easscanUrl + data.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' width={28} height={28} /></Link></H1>
       <div className='flex items-center justify-between mb-5'>
         <Share shareUrl={shareUrl} />
         {showEvaluateButton && (

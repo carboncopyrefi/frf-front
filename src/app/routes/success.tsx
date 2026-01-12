@@ -10,17 +10,24 @@ export async function loader({ request }: Route.LoaderArgs) {
   const from = url.searchParams.get('from') || 'unknown';
   const scoreParam = url.searchParams.get('score');
   const score = scoreParam ? parseFloat(scoreParam) : null;
+  const easParam = url.searchParams.get('attestation');
 
   if (!from || (from !== 'evaluate')) {
     throw redirect('/');
   }
 
-  return { from, score };
+  return { from, score, eas_uid: easParam };
+}
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: 'Evaluation Completed' }];
 }
 
 export default function Success() {
-  const { from, score } = useLoaderData<typeof loader>();
+  const { from, score, eas_uid } = useLoaderData<typeof loader>();
   const fmtScore = (v: number | null) => (v === null ? 'N/A' : `${(v * 100).toFixed(1)}%`);
+  const easscanUrl = import.meta.env.VITE_EASSCAN_URL;
+  const attestationUrl = eas_uid ? `${easscanUrl}${eas_uid}` : '/';
 
   return (
     <Transition
@@ -31,7 +38,7 @@ export default function Success() {
       enterTo="opacity-100"
     >
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <div className="bg-white dark:bg-gray-900 rounded-lg p-8 shadow-lg text-gray-700 dark:text-gray-300">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 text-gray-700 dark:text-gray-300">
           <CircleCheck className="w-16 h-16 text-emerald-600 mx-auto mb-4" />
           
           {from === 'evaluate' && (
@@ -41,7 +48,7 @@ export default function Success() {
               
               {score !== null && (
                 <div className="mt-6">
-                  <p className="text-lg mb-4">
+                  <p className="mb-4">
                     Your Evaluation Result
                   </p>
                   <div className="relative w-full bg-gray-200 rounded-full h-6 mb-2">
@@ -63,10 +70,13 @@ export default function Success() {
             >
               Back Home
             </Link>
-            {/* Optional: Add a link to view the project if you have the ID */}
-            {/* <Link to={`/project/${submissionId}`} className="inline-block px-6 py-3 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors">
-              View Project
-            </Link> */}
+            <Link
+              to={attestationUrl}
+              target='_blank'
+              className="inline-block px-6 py-3 rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition-colors"
+            >
+              View Attestation
+            </Link>
           </div>
         </div>
       </div>
