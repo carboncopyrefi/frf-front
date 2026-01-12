@@ -66,14 +66,14 @@ export default function Success() {
           <div className="mt-8 space-x-4">
             <Link
               to="/"
-              className="inline-block px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+              className="inline-block px-6 py-3 rounded-full bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
             >
               Back Home
             </Link>
             <Link
               to={attestationUrl}
               target='_blank'
-              className="inline-block px-6 py-3 rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition-colors"
+              className="inline-block px-6 py-3 rounded-full bg-amber-600 hover:bg-amber-700 text-white font-medium transition-colors"
             >
               View Attestation
             </Link>

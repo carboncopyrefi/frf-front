@@ -60,16 +60,25 @@ export default function SubmissionPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <Back />
-      <H1 className='mb-0 flex flex-row items-center gap-2'>{data.project_name}<Link to={`${easscanUrl + data.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' width={28} height={28} /></Link></H1>
-      <div className='flex items-center justify-between mb-5'>
+      <H1 className='mb-0 flex flex-row items-center gap-2'>{data.project_name}</H1>
+      <div className='flex sm:items-center sm:justify-between mb-5 flex-col sm:flex-row space-y-3 sm:space-y-0'>
         <Share shareUrl={shareUrl} />
-        {showEvaluateButton && (
+        <div className="gap-2 flex flex-row">
+          {showEvaluateButton && (
+            <Link
+              to={`/evaluate/${data.id}`}
+              className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
+                Evaluate
+            </Link>
+          )}
           <Link
-            to={`/evaluate/${data.id}`}
-            className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
-              Evaluate
+            to={`${easscanUrl + data.eas_uid}`}
+            target="_blank"
+            className="inline-block px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
+          >
+            View Attestation
           </Link>
-        )}
+        </div>
       </div>
       {/* Header */}
       <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-6 space-y-2 mb-6">
@@ -96,7 +105,7 @@ export default function SubmissionPage() {
             <span>{fmtDate(e.date_completed)}</span>
             <span>{e.evaluator}</span>
             <span>{fmtScore(e.score)}</span>
-            <span><Link to={`${"https://optimism.easscan.org/attestation/view/" + e.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' /></Link></span>
+            <span><Link to={`${easscanUrl + data.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' /></Link></span>
           </div>
         ))
       )}
