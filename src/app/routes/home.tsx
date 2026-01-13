@@ -170,7 +170,7 @@ export default function Home() {
                                 Evaluate
                               </Link>
                             )}
-                            <Link to={`/projects/${s.project_name.toLowerCase().replace(" ", "-")}`} className="flex items-center justify-center w-full px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium">View</Link>
+                            <Link to={`/projects/${s.project_name.toLowerCase().replace(/\s+/g, '-')}`} className="flex items-center justify-center w-full px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium">View</Link>
                           </div>
                         </div>
                       </div>
@@ -232,7 +232,7 @@ export default function Home() {
                                 </Link>
                               )}
                               <Link
-                                to={`/projects/${s.project_name.toLowerCase().replace(" ", "-")}`}
+                                to={`/projects/${s.project_name.toLowerCase().replace(/\s+/g, '-')}`}
                                 className="px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
                               >
                                 View

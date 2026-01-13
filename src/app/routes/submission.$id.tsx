@@ -53,7 +53,7 @@ export default function SubmissionPage() {
   const fmtScore = (v: number | null) => (v === null ? 'N/A' : `${(v * 100).toFixed(1)}%`);
 
   const rootUrl = import.meta.env.VITE_ROOT_URL;
-  const shareUrl= rootUrl + `/projects/${data.project_name.toLowerCase().replace(" ", "-")}`;
+  const shareUrl= rootUrl + `/projects/${data.project_name.toLowerCase().replace(/\s+/g, '-')}`;
 
   const easscanUrl = import.meta.env.VITE_EASSCAN_URL;
 
