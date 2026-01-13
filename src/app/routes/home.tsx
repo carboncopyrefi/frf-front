@@ -181,7 +181,7 @@ export default function Home() {
                   <thead className="bg-gray-100/50 dark:bg-gray-800/50">
                     <tr>
                       <th className="px-4 py-3 text-left font-semibold">Project</th>
-                      <th className="px-4 py-3 text-left font-semibold">Date Completed</th>
+                      <th className="px-4 py-3 text-left font-semibold">Date Submitted</th>
                       <th className="px-4 py-3 text-left font-semibold">Last Evaluation Date</th>
                       <th className="px-4 py-3 text-left font-semibold">Evaluations</th>
                       <th className="px-4 py-3 text-left font-semibold">Funding Readiness</th>

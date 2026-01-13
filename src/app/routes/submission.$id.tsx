@@ -83,7 +83,7 @@ export default function SubmissionPage() {
       {/* Header */}
       <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-6 space-y-2 mb-6">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-          <div><p className="text-gray-500 dark:text-gray-400">Date Completed</p><p>{fmtDate(data.date_completed)}</p></div>
+          <div><p className="text-gray-500 dark:text-gray-400">Date Submitted</p><p>{fmtDate(data.date_completed)}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Category</p><p>{data.category.name}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{data.evaluation_count}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Last Evaluation</p><p>{fmtDate(data.last_evaluation_date)}</p></div>

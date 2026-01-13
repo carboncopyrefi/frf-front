@@ -139,7 +139,7 @@ export default function Drawer({
                     {submission.past_submissions.length ? (
                       submission.past_submissions.map((u: any) => (
                         <div key={u.date} className='border-b pb-3 border-gray-200 dark:border-gray-600'>
-                          <p className="text-md"><strong>Date Completed:</strong> {new Date(u.date_completed).toLocaleDateString()}</p>
+                          <p className="text-md"><strong>Date Submitted:</strong> {new Date(u.date_completed).toLocaleDateString()}</p>
                           <p className="mt-1"><strong>Score:</strong> {fmtScore(u.score)}</p>
                         </div>
                       ))
