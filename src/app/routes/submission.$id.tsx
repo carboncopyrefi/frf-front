@@ -10,6 +10,7 @@ import { Back } from "~/components/Back";
 import { Share } from "~/components/Share";
 import { useSiweAuth } from '~/lib/auth'
 import { useAppKitAccount } from '@reown/appkit/react';
+import { ScoreBadge } from '~/components/ScoreBadge';
 
 /* ---------- loader (only id) ---------- */
 export async function loader({ params }: Route.LoaderArgs) {
@@ -87,7 +88,7 @@ export default function SubmissionPage() {
           <div><p className="text-gray-500 dark:text-gray-400">Category</p><p>{data.category.name}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{data.evaluation_count}</p></div>
           <div><p className="text-gray-500 dark:text-gray-400">Last Evaluation</p><p>{fmtDate(data.last_evaluation_date)}</p></div>
-          <div><p className="text-gray-500 dark:text-gray-400">Funding Readiness</p><p>{fmtScore(data.score)}</p></div>
+          <div><p className="text-gray-500 dark:text-gray-400">Funding Readiness</p><p><ScoreBadge score={data.score} /></p></div>
         </div>
       </div>
 
@@ -104,7 +105,7 @@ export default function SubmissionPage() {
           >
             <span>{fmtDate(e.date_completed)}</span>
             <span>{e.evaluator}</span>
-            <span>{fmtScore(e.score)}</span>
+            <ScoreBadge score={e.score} />
             <span><Link to={`${easscanUrl + e.eas_uid}`} target="_blank"><BadgeCheck className='text-emerald-600' /></Link></span>
           </div>
         ))

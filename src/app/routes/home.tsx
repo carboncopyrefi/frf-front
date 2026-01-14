@@ -7,6 +7,7 @@ import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headless
 import { ChevronDownIcon } from 'lucide-react';
 import { useSiweAuth } from '~/lib/auth'
 import { useAppKitAccount } from '@reown/appkit/react';
+import { ScoreBadge } from '~/components/ScoreBadge';
 
 /* ------------------------------------------------------------------ */
 /* React-Router 7 loader                                              */
@@ -77,7 +78,7 @@ export default function Home() {
             </p>
           </article>
           <article className="p-4 rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Category</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Ecosystem</p>
             <p className="text-2xl font-semibold text-wrap-balance">{data.name}</p>
           </article>
         </section>
@@ -158,8 +159,8 @@ export default function Home() {
 
                           <div className="grid grid-cols-1 space-y-3 sm:space-y-0 sm:grid-cols-3 md:grid-cols-1 md:space-y-3 gap-2 text-sm">
                             <div>
-                              <p className="text-gray-500 dark:text-gray-400">Funding Readiness</p><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${(s.score ?? 0) >= 0.8 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : (s.score ?? 0) >= 0.5 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
-                              {formatScore(s.score)}</span>
+                              <p className="text-gray-500 dark:text-gray-400">Funding Readiness</p>
+                              <ScoreBadge score={s.score} />
                             </div>
                             <div><p className="text-gray-500 dark:text-gray-400">Evaluations</p><p>{s.evaluation_count}</p></div>
                             <div><p className="text-gray-500 dark:text-gray-400">Last Evaluation</p><p>{s.last_evaluation_date ? new Date(s.last_evaluation_date).toLocaleDateString() : 'N/A'}</p></div>
@@ -209,20 +210,7 @@ export default function Home() {
                           </td>
                           <td className="px-4 py-3 font-mono text-gray-700 dark:text-gray-300">{s.evaluation_count}</td>
                           <td className="px-4 py-3">
-                            <span
-                              className={`
-                                inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                ${
-                                  (s.score ?? 0) >= 0.8
-                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                                    : (s.score ?? 0) >= 0.5
-                                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
-                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-                                }
-                              `}
-                            >
-                              {formatScore(s.score)}
-                            </span>
+                            <ScoreBadge score={s.score} />
                           </td>
                           <td className='text-right pe-4 py-3'>
                             <div className="inline-flex items-center gap-2">

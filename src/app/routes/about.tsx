@@ -8,7 +8,7 @@ export default function About() {
         <div className="max-w-4xl mx-auto px-4 py-8">
             <Back />
             <H1>About the Funding Readiness Framework</H1>
-            <div className="prose prose-indigo mt-6">
+            <div className="prose dark:prose-invert mt-6">
                 <Markdown>
                     The Funding Readiness Framework is an open-source project developed by CARBON Copy to help Web3 ecosystems and grant round operators understand which projects are ready for growth-level funding.
                 </Markdown>

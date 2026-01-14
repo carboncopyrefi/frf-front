@@ -28,14 +28,6 @@ export default function Submission() {
   const navigate = useNavigate();
   const { authenticated, role} = useSiweAuth()
 
-  if (!authenticated) {
-    return (
-      <div className="p-8 text-center">
-        <p>Please connect your wallet and sign in to make a submission.</p>
-      </div>
-    )
-  }
-
   /* ---------- derive ordered sections ---------- */
   const NAME_IX   = -2; // synthetic
   const KARMA_IX  = -1;
@@ -120,6 +112,14 @@ export default function Submission() {
     }
   }, []);
 
+  if (!authenticated) {
+    return (
+      <div className="p-8 text-center">
+        <p>Please connect your wallet and sign in to make a submission.</p>
+      </div>
+    )
+  }
+
   const handleAnswerChange = (idx: number, val: string) => {
     setChars((c) => ({ ...c, [idx]: val.length }));
     setAnswers((a) => ({ ...a, [idx]: val }));
@@ -129,7 +129,7 @@ export default function Submission() {
   const next = () => step < sections.length - 1 && setStep(step + 1);
   // const back = () => step > 0 && setStep(step - 1);
 
-  const karmaFilled = (answers[KARMA_IX] || '').trim().length > 0;
+  // const karmaFilled = (answers[KARMA_IX] || '').trim().length > 0;
 
   /* ---------- submit ---------- */
     const handleSubmit = async () => {
@@ -181,7 +181,7 @@ export default function Submission() {
           <div key={s} className="flex items-center">
             <button
                 onClick={() => setStep(idx)}
-                disabled={!karmaFilled}
+                disabled={karmaStatus !== 'found'}
                 className={clsx(
                 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500', 
                 {
@@ -190,9 +190,9 @@ export default function Submission() {
                   'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300':
                     !(idx <= step),
                   'cursor-not-allowed':
-                    !karmaFilled,
+                    karmaStatus !== 'found',
                   'cursor-pointer':
-                    karmaFilled
+                    karmaStatus === 'found'
                 }
               )}
                 aria-label={`Go to section ${idx + 1}`}
@@ -380,9 +380,9 @@ export default function Submission() {
         ) : (
             <button
                 onClick={next}
-                disabled={!karmaFilled}
+                disabled={karmaStatus !== 'found'}
                 className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition ${
-                  karmaFilled
+                  karmaStatus === 'found'
                   ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer'
                   : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}

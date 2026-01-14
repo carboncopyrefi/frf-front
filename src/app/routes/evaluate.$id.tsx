@@ -41,9 +41,9 @@ export default function Evaluate() {
   const { address } = useAppKitAccount()
   const [accepted, setAccepted] = useState(false);
 
-  if (!authenticated || role !== 'evaluator') return <Navigate to="/" />
-
   useEffect(() => {
+    if (!authenticated || role !== 'evaluator') return;
+
     api.get<Submission>(`submissions/${submissionId}?karma=true`)
       .then((s) => {
         // order answers same as before
@@ -62,6 +62,7 @@ export default function Evaluate() {
     window.scrollTo({ top: y, behavior: 'smooth' });
   }, [step]);
 
+  if (!authenticated || role !== 'evaluator') return <Navigate to="/" />
   if (!submission) return <p className="p-8">Loading submission…</p>;
 
   const alreadyEvaluated = authenticated &&
