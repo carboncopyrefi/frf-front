@@ -159,13 +159,15 @@ export default function App() {
 
             {/* Mobile hamburger */}
             <div className="md:hidden flex items-center gap-2">
-              <button
+              {/* <button
                 onClick={() => setMenuOpen((o) => !o)}
                 className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                 aria-label="Menu"
               >
                 <Menu />
-              </button>
+              </button> */}
+              <ConnectButton />
+              <SubmissionButton mobile />
               {/* dark toggle stays visible on mobile */}
               <button
                 onClick={() => setDark((v) => !v)}
@@ -180,26 +182,6 @@ export default function App() {
               </button>
             </div>
           </div>
-
-          {/* Mobile menu */}
-          <Transition
-            show={menuOpen}
-            as={Fragment}
-            enter="transition ease-out duration-200"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="transition ease-in duration-150"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-          >
-            <div className="md:hidden pb-4">
-              <div className="flex flex-col items-stretch gap-3 mt-3">
-                <ConnectButton />
-                <SubmissionButton mobile onClick={() => setMenuOpen(false)} />
-
-              </div>
-            </div>
-          </Transition>
         </div>
       </header>
 
