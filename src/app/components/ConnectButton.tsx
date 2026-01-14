@@ -37,7 +37,7 @@ export default function ConnectButton() {
           className="md:hidden bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded-full transition cursor-pointer"
         >
           {networkImage && (
-            <img src={networkImage} className="w-6 h-6 rounded-full" alt="Network logo" />
+            <img src={networkImage} className="w-6 h-6 rounded-full block" alt="Network logo" />
           )}
         </button>
       </div>

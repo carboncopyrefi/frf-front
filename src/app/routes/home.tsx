@@ -87,14 +87,14 @@ export default function Home() {
         <section className="@container">
           <div className="lg:rounded-2xl lg:bg-white lg:dark:bg-gray-900 lg:shadow-sm lg:dark:shadow-none lg:inset-shadow-sm lg:dark:inset-shadow-gray-800 overflow-hidden mt-6">
             {/* toolbar: search + sort */}
-            <div className="lg:px-4 py-5 lg:border-b lg:border-gray-200 lg:dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="lg:px-4 py-5 lg:border-b lg:border-gray-200 lg:dark:border-gray-800 flex flex-col sm:flex-row justify-between gap-4">
               <Form
                 onSubmit={(e) => {
                   e.preventDefault(); // stop real submit
                   const q = new FormData(e.currentTarget).get('q') as string;
                   setSearchParams({ q });
                 }}
-                className="flex items-center gap-2 w-full sm:w-fit"
+                className="flex gap-2"
               >
                 <input
                   name="q"

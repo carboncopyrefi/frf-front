@@ -6,7 +6,7 @@ const API_BASE =
 
 async function request<T = unknown>(
   endpoint: string,
-  init?: RequestInit & { token?: string }
+  init?: RequestInit & { token?: string; headers?: Record<string, string> }
 ): Promise<T> {
    const url = /https?:\/\//.test(endpoint)
     ? endpoint.trim()                          
@@ -32,34 +32,34 @@ async function request<T = unknown>(
 }
 
 export const api = {
-  get<T = unknown>(endpoint: string, token: string | null = null) {
-    return request<T>(endpoint, { method: 'GET', token: token ?? undefined });
+  get<T = unknown>(endpoint: string, options?: { token?: string; headers?: Record<string, string> }) {
+    return request<T>(endpoint, options);
   },
-  post<T = unknown>(endpoint: string, body: unknown, token: string | null = null) {
+  post<T = unknown>(endpoint: string, body: unknown, options?: { token?: string; headers?: Record<string, string> }) {
     return request<T>(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      token: token ?? undefined,
+      ...options,
     });
   },
-  put<T = unknown>(endpoint: string, body: unknown, token: string | null = null) {
+  put<T = unknown>(endpoint: string, body: unknown, options?: { token?: string; headers?: Record<string, string> }) {
     return request<T>(endpoint, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      token: token ?? undefined,
+      ...options,
     });
   },
-  patch<T = unknown>(endpoint: string, body: unknown, token: string | null = null) {
+  patch<T = unknown>(endpoint: string, body: unknown, options?: { token?: string; headers?: Record<string, string> }) {
     return request<T>(endpoint, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      token: token ?? undefined,
+      ...options,
     });
   },
-  delete<T = unknown>(endpoint: string, token: string | null = null) {
-    return request<T>(endpoint, { method: 'DELETE', token: token ?? undefined, });
+  delete<T = unknown>(endpoint: string, options?: { token?: string; headers?: Record<string, string> }) {
+    return request<T>(endpoint, { method: 'DELETE', ...options });
   },
 } as const;

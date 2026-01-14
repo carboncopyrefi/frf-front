@@ -85,8 +85,8 @@ export default function Submission() {
   }, [answers[KARMA_IX]]);
 
   useEffect(() => {
-    api.get<any>('https://api.carboncopy.news/projects')
-      .then((raw) => setProjects(Array.isArray(raw.projects) ? raw.projects : []))
+    api.get<any>('https://carboncopy.pythonanywhere.com/api/projects', { headers: { 'X-API-Key': import.meta.env.VITE_CC_API_KEY } })
+      .then((raw) => setProjects(Array.isArray(raw) ? raw : []))
       .catch(() => setProjects([])); // silent fail
   }, []);
 
@@ -152,7 +152,7 @@ export default function Submission() {
 
       try {
           const token = localStorage.getItem('siwe-jwt')
-          const res = await api.post<{ id: string }>('/submission', payload, token);
+          const res = await api.post<{ id: string }>('/submission', payload, { token });
           localStorage.removeItem(SAVE_KEY);
           navigate(`/submissions/${res.id}`);
       } catch (error) {

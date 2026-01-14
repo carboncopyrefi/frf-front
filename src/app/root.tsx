@@ -135,8 +135,11 @@ export default function App() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/">
-              <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              <h1 className="hidden sm:block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
                 Funding Readiness Framework
+              </h1>
+              <h1 className="sm:hidden text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+                FRF
               </h1>
             </Link>
 
