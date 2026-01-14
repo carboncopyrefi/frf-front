@@ -55,7 +55,7 @@ export default function ConnectButton() {
 
     <button
       onClick={() => open()}
-      className="md:hidden bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded-full transition cursor-pointer"
+      className="md:hidden bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded-full transition cursor-pointer p-2"
     >
       <Wallet />
     </button>
