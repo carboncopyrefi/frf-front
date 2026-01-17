@@ -20,11 +20,6 @@ export async function loader({ params }: Route.LoaderArgs) {
   return { questions, submissionId: params.id }; // pass id only
 }
 
-/* ---------- meta ---------- */
-export function meta({}: Route.MetaArgs) {
-  return [{ title: 'Evaluate Submission' }];
-}
-
 /* ---------- component ---------- */
 export default function Evaluate() {
   const { questions, submissionId } = useLoaderData<typeof loader>();

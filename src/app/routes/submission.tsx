@@ -16,10 +16,6 @@ export async function loader(): Promise<{ questions: (Question & { id: string })
   return { questions: await api.get<(Question & { id: string })[]>('questions') };
 }
 
-export function meta({}: Route.MetaArgs) {
-  return [{ title: 'Make Submission' }];
-}
-
 export default function Submission() {
   const { questions } = useLoaderData<typeof loader>();
   const [projects, setProjects] = useState<any[]>([]);

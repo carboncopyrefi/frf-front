@@ -21,12 +21,14 @@ export async function loader(): Promise<CategoryPayload> {
 /* ------------------------------------------------------------------ */
 /* Meta                                                               */
 /* ------------------------------------------------------------------ */
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: 'Funding Readiness Framework by CARBON Copy' },
-    { name: 'description', content: 'Category submissions table' },
-  ];
-}
+const url = "https://frf.carboncopy.news";
+
+export function links() {
+  return [{
+    rel: "canonical",
+    href: url
+  }];
+};
 
 /* ------------------------------------------------------------------ */
 /* Component                                                          */

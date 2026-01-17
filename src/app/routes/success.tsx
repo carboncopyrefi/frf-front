@@ -19,10 +19,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { from, score, eas_uid: easParam };
 }
 
-export function meta({}: Route.MetaArgs) {
-  return [{ title: 'Evaluation Completed' }];
-}
-
 export default function Success() {
   const { from, score, eas_uid } = useLoaderData<typeof loader>();
   const fmtScore = (v: number | null) => (v === null ? 'N/A' : `${(v * 100).toFixed(1)}%`);

@@ -2,7 +2,6 @@ import Markdown from "react-markdown";
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
 
-
 export default function About() {
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">

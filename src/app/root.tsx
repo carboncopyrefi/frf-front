@@ -24,6 +24,7 @@ import { createSIWE  } from './lib/siwe-stubs'
 import ServerError from "./routes/errors/server-error";
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
+import { usePageTracking } from "./hooks/tracking";
 
 const queryClient = new QueryClient()
 const siweConfig = createSIWE(networks);
@@ -62,7 +63,26 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export const meta: Route.MetaFunction = () => [
+    {title: "Funding Readiness Framework by CARBON Copy"},
+    { name: 'description', content: 'The Funding Readiness Framework is an open-source project developed by CARBON Copy to help Web3 ecosystems and grant round operators understand which projects are ready for growth-level funding.' },
+    {property: "og:title", content: "Funding Readiness Framework by CARBON Copy"},
+    {property: "og:description", content: 'The Funding Readiness Framework is an open-source project developed by CARBON Copy to help Web3 ecosystems and grant round operators understand which projects are ready for growth-level funding.'},
+    {property: "og:image", content: "https://frf.carboncopy.news/meta.jpg"},
+    {property: "og:url", content: "https://frf.carboncopy.news"},
+    {property: "og:site_name", content: "Funding Readiness Framework by CARBON Copy"},
+    {property: "og:type", content: "website"},
+    {property: "og:locale", content: "en_GB"},
+    {property: "twitter:title", content: "Funding Readiness Framework by CARBON Copy"},
+    {property: "twitter:description", content: 'The Funding Readiness Framework is an open-source project developed by CARBON Copy to help Web3 ecosystems and grant round operators understand which projects are ready for growth-level funding.'},
+    {property: "twitter:image", content: "https://frf.carboncopy.news/meta.jpg"},
+    {property: "twitter:site", content: "@cc_refi_news"},
+    {property: "twitter:card", content: "summary_large_image"},
+  ];
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+
   return (
     <html lang="en">
       <head>
@@ -70,6 +90,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {/* Google Analytics (GA4) */}
+        {import.meta.env.PROD && measurementId && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
+            ></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${measurementId}', { send_page_view: false });
+                `,
+              }}
+            />
+          </>
+        )}
       </head>
       <body>
         <ClientOnly>
@@ -88,6 +127,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+
+  usePageTracking();
 
   NProgress.configure({
     showSpinner: false,
