@@ -9,8 +9,8 @@ if (!projectId) {
 
 export const metadata = {
   name: 'Funding Readiness Framework by CARBON Copy',
-  description: 'Evaluations on Optimism',
-  url: 'https://frf-front.vercel.app',
+  description: 'The Funding Readiness Framework is an open-source project developed by CARBON Copy to help Web3 ecosystems and grant round operators understand which projects are ready for growth-level funding.',
+  url: 'https://frf.carboncopy.news',
   icons: ['https://carboncopy.news/images/logo.png']
 }
 export const networks = [optimism] as [AppKitNetwork, ...AppKitNetwork[]]

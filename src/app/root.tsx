@@ -11,8 +11,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { Link } from "react-router";
-import { Moon, Sun, Menu } from 'lucide-react';
-import { Transition } from '@headlessui/react';
+import { Moon, Sun, CircleQuestionMark } from 'lucide-react';
 import ClientOnly from '~/components/ClientOnly'
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiProvider } from 'wagmi'
@@ -25,6 +24,9 @@ import ServerError from "./routes/errors/server-error";
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { usePageTracking } from "./hooks/tracking";
+import { StatementModal } from '~/components/StatementModal';
+import Markdown from "react-markdown";
+
 
 const queryClient = new QueryClient()
 const siweConfig = createSIWE(networks);
@@ -136,7 +138,12 @@ export default function App() {
 
   /* ---------- dark-mode ---------- */
   const [dark, setDark] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', text: '' });
+  const openModal = (title: string, text: string) => {
+    setModalContent({ title, text });
+    setModalOpen(true);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
@@ -189,6 +196,13 @@ export default function App() {
               <ConnectButton />
               <SubmissionButton />
               <button
+                onClick={() => openModal('Need Help?', "If you're having any issues with the app, feel free to reach out at hello@carboncopy.news or join our [Discord server](https://discord.gg/53TpqNgPC5) and use the channel 'funding-readiness-framework'.")}
+                className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                aria-label="Help"
+              >
+                <CircleQuestionMark />
+              </button>
+              <button
                 onClick={() => setDark((v) => !v)}
                 className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                 aria-label="Toggle dark mode"
@@ -212,6 +226,13 @@ export default function App() {
               </button> */}
               <ConnectButton />
               <SubmissionButton mobile />
+              <button
+                onClick={() => openModal('Need Help?', "If you're having any issues with the app, feel free to reach out at hello@carboncopy.news or join our [Discord server](https://discord.gg/53TpqNgPC5) and use the channel 'funding-readiness-framework'.")}
+                className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                aria-label="Help"
+              >
+                <CircleQuestionMark />
+              </button>
               {/* dark toggle stays visible on mobile */}
               <button
                 onClick={() => setDark((v) => !v)}
@@ -249,7 +270,7 @@ export default function App() {
             <Link to="https://carboncopy.news" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               CARBON Copy
             </Link>
-            <Link to="https://karma.xyz" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+            <Link to="https://karmahq.xyz" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               Karma
             </Link>
             <Link to="https://attest.org" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
@@ -258,6 +279,13 @@ export default function App() {
           </div>
         </div>
       </footer>
+      <StatementModal
+        open={modalOpen}
+        setOpen={setModalOpen}
+        title={modalContent.title}
+      >
+        <Markdown>{modalContent.text}</Markdown>
+      </StatementModal>
     </div>  
   );
 }

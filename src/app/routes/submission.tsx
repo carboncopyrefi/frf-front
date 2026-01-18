@@ -236,7 +236,7 @@ export default function Submission() {
                       <label className="font-medium text-gray-800 dark:text-gray-200">Karma ID (Required)</label>
                       <button
                           type="button"
-                          onClick={() => openModal('Karma Project', "You can find this by navigating to your Karma project's page and looking at its URL.")}
+                          onClick={() => openModal('Karma Project', "You can find this by navigating to your Karma project's page and looking at its URL. Example: 'carbon-copy-1' is the Karma ID in https://www.karmahq.xyz/project/carbon-copy-1")}
                           className="text-indigo-600 dark:text-indigo-400 cursor-pointer"
                       >
                       <Info />
