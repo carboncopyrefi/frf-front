@@ -41,7 +41,8 @@ export default function Submission() {
 
   const allFilled = sectionQuestions.every((q) => (answers[questions.indexOf(q)] || '').trim() !== '');
   const [accepted, setAccepted] = useState(false);
-  const canSubmit = allFilled && accepted;
+  const projectFilled = (answers[NAME_IX] || '').trim().length > 0;
+  const canSubmit = allFilled && accepted && projectFilled;
 
 
   /* ---------- modal ---------- */
@@ -124,8 +125,6 @@ export default function Submission() {
   /* ---------- navigation ---------- */
   const next = () => step < sections.length - 1 && setStep(step + 1);
   // const back = () => step > 0 && setStep(step - 1);
-
-  // const karmaFilled = (answers[KARMA_IX] || '').trim().length > 0;
 
   /* ---------- submit ---------- */
     const handleSubmit = async () => {
@@ -212,10 +211,11 @@ export default function Submission() {
                         <label className="font-medium text-gray-800 dark:text-gray-200">Name</label>
                     </div>
                       <Autocomplete
+                          required
                           loading={!projects.length}
-                          value={answers[NAME_IX] || ''} // ← keeps it alive
+                          value={answers[NAME_IX]} // ← keeps it alive
                           options={projects.map((p) => ({ value: p.id, label: p.name }))}
-                          placeholder="Start typing project name…"
+                          placeholder="Select your project"
                           onChange={(opt) => {
                               const karma = projects.find((p) => p.id === opt?.value)?.karma_slug || '';
                               setAnswers({ ...answers, [NAME_IX]: opt?.label || '', [KARMA_IX]: karma });
@@ -376,9 +376,9 @@ export default function Submission() {
         ) : (
             <button
                 onClick={next}
-                disabled={karmaStatus !== 'found'}
+                disabled={karmaStatus !== 'found' || !projectFilled}
                 className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition ${
-                  karmaStatus === 'found'
+                  karmaStatus === 'found' && projectFilled
                   ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer'
                   : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}
