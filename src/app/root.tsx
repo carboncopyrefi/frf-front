@@ -267,6 +267,9 @@ export default function App() {
             <Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               About FRF
             </Link>
+            <Link to="/faq" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+              FAQ
+            </Link>
             <Link to="https://carboncopy.news" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
               CARBON Copy
             </Link>

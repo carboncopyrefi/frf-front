@@ -1,5 +1,5 @@
 import { SiX, SiGithub, SiDiscord, SiLinkedin, SiFarcaster } from "react-icons/si";
-import { BsGlobe, BsCameraVideoFill, BsNewspaper, BsSignpostFill } from "react-icons/bs";
+import { BsGlobe, BsCameraVideoFill, BsNewspaper, BsSignpostFill, BsLink } from "react-icons/bs";
 import { LuPresentation } from "react-icons/lu";
 
 
@@ -14,4 +14,5 @@ export const Icon: Record<string, JSX.Element> = {
   farcaster: <SiFarcaster className="w-5 h-5" />,
   "milestone": <BsSignpostFill className="w-5 h-5" />,
   "update": <BsNewspaper className="w-5 h-5" />,
+  "custom": <BsLink className="w-5 h-5" />,
 };

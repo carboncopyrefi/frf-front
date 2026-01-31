@@ -2,6 +2,15 @@ import Markdown from "react-markdown";
 import { H1 } from "~/components/H1";
 import { Back } from "~/components/Back";
 
+const url = "https://frf.carboncopy.news/about";
+
+export function links() {
+  return [{
+    rel: "canonical",
+    href: url
+  }];
+};
+
 export default function About() {
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">

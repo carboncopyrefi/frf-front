@@ -8,5 +8,6 @@ export default [
     route("evaluate/:id", "routes/evaluate.$id.tsx"),
     route("success", "routes/success.tsx"),
     route("about", "routes/about.tsx"),
+    route("faq", "routes/faq.tsx"),
     route("*", "routes/errors/not-found.tsx"),
 ] satisfies RouteConfig;
