@@ -146,6 +146,11 @@ export default function Evaluate() {
         <div className="rounded-2xl bg-white dark:bg-gray-900 shadow-sm dark:shadow-none inset-shadow-sm dark:inset-shadow-gray-800 p-4 space-y-6">
           <h2 className="text-xl font-semibold">{q.section}</h2>
           <div className="space-y-6">
+              <div>
+                  <p className="whitespace-pre-wrap text-gray-800 dark:text-gray-400 text-md">
+                      {q.project_statement}
+                  </p>
+              </div>
               <div className="space-y-2">
                   <div>
                       <label className="font-medium text-gray-800 dark:text-gray-200">Project's Answer</label>
@@ -154,10 +159,9 @@ export default function Evaluate() {
                       {current.answer}
                   </p>
               </div>
-
               <div className="space-y-2 border-t border-gray-300 dark:border-gray-500 pt-4">
                   <div className="flex items-start justify-between">
-                      <label className="font-medium text-gray-800 dark:text-gray-200">Your Assessment</label>
+                      <label className="font-medium text-gray-800 dark:text-gray-200">Evaluator's Assessment</label>
                       <button
                           onClick={() => setModalOpen(true)}
                           className="text-indigo-600 dark:text-indigo-400 cursor-pointer"
