@@ -117,6 +117,20 @@ export default function Submission() {
     )
   }
 
+  const exportMarkdown = () => {
+    const md = `# Funding Readiness Framework – Questions\n\n${questions
+    .map((q) => `## ${q.section}\n**${q.project_statement}**\n\nAdditional context: ${q.project_description}\n`)
+    .join('\n')}`;
+
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'submission-questions.md';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleAnswerChange = (idx: number, val: string) => {
     setChars((c) => ({ ...c, [idx]: val.length }));
     setAnswers((a) => ({ ...a, [idx]: val }));
@@ -159,7 +173,15 @@ export default function Submission() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
         <Back />
-        <H1>Make Submission</H1>
+        <div className='flex sm:items-center sm:justify-between mb-5 flex-col sm:flex-row space-y-3 sm:space-y-0'>
+          <H1 className='mb-0 flex flex-row items-center gap-2'>Make Submission</H1>
+          <button
+            onClick={exportMarkdown}
+            className="inline-block px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition cursor-pointer"
+          >
+            Export Questions (.md)
+          </button>
+        </div>
         <div className='mb-10'>
             <p className='mb-3 inline-flex gap-2 items-center'>
                 <CircleChevronRight width={20} height={20} className='shrink-0' />Fill in the information provided to the best of your knowledge.</p>

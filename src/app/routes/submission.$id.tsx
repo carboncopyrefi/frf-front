@@ -77,7 +77,7 @@ export default function SubmissionPage() {
             <Link
               to={`${easscanUrl + data.eas_uid}`}
               target="_blank"
-              className="inline-block px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition"
+              className="inline-block px-5 py-2 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition cursor-pointer"
             >
               View Attestation
             </Link>
